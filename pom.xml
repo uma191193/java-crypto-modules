@@ -48,7 +48,6 @@
             <version>${bouncycastle.version}</version>
         </dependency>
 
-
         <!--
         JJWT API
         JSON Web Token library used to create, sign, parse,
@@ -91,6 +90,7 @@
         <!--
         JSch (Java Secure Channel)
         Java implementation of SSH2 protocol.
+
         Used for:
         - Secure remote login
         - SFTP file transfers
@@ -107,6 +107,7 @@
         Apache Camel Jasypt Integration
         Provides encryption/decryption support for configuration
         properties using Jasypt (Java Simplified Encryption).
+
         Useful for securing sensitive values such as passwords,
         API keys, and database credentials in configuration files.
         -->
@@ -129,10 +130,45 @@
             <version>2.0.16</version>
         </dependency>
 
+        <!--
+        Spring Security Crypto
+
+        Provides cryptographic utilities from the Spring Security framework.
+        Primarily used for secure password hashing and verification using
+        strong algorithms such as BCrypt, PBKDF2, SCrypt, and Argon2.
+
+        Includes utilities for encrypting and decrypting sensitive data like
+        passwords, API keys, tokens, or configuration secrets.
+
+        Commonly used in authentication systems to securely store user
+        passwords in databases by hashing them instead of saving plain
+        text values. Can be used independently without the full
+        Spring Security framework.
+        -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
+        <!--
+        Apache Commons Logging
+
+        Logging abstraction used internally by Spring Framework libraries.
+        Required by Spring Security Crypto components such as
+        Argon2PasswordEncoder and other cryptographic utilities.
+        -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.3.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+
             <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -143,6 +179,7 @@
                     <target>24</target>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
