@@ -1,4 +1,3 @@
-/*
 package jjwt_13;
 
 import io.jsonwebtoken.*;
@@ -9,7 +8,6 @@ import javax.crypto.SecretKey;
 import java.security.KeyPair;
 import java.util.Date;
 
-*/
 /**
  * Demonstrates using JJWT 0.13.0 to:
  * 1. Generate symmetric (HMAC) and asymmetric (RSA) keys
@@ -18,8 +16,7 @@ import java.util.Date;
  * 4. Encrypt a JWT (JWE)
  * 5. Decrypt the JWE
  * 6. Verify encryption-decryption integrity
- *//*
-
+ */
 public class JjwtCryptoSample_13 {
 
     private static final Logger logger = LoggerFactory.getLogger(JjwtCryptoSample_13.class);
@@ -29,23 +26,19 @@ public class JjwtCryptoSample_13 {
             // ============================================================
             // Step 1: Generate Keys (Symmetric & Asymmetric)
             // ============================================================
-            */
-/*
+            /*
              * Symmetric key (SecretKey) for signing JWTs (JWS) using HS256:
              * - HS256 uses HMAC + SHA-256
              * - Same key is used for signing and verification
-             *//*
-
+             */
             SecretKey hmacKey = Jwts.SIG.HS256.key().build();
 
-            */
-/*
+            /*
              * Asymmetric RSA key pair for encrypting JWTs (JWE) using RSA-OAEP + AES-256-GCM:
              * - Public key: used to encrypt the JWT
              * - Private key: used to decrypt the JWT
              * - Safer for multi-party systems because private key is not shared
-             *//*
-
+             */
             KeyPair rsaKeyPair = Jwts.SIG.RS256.keyPair().build();
 
             // Define "issued at" (iat) and "expiration" (exp) claims
@@ -55,18 +48,16 @@ public class JjwtCryptoSample_13 {
             // ============================================================
             // Step 2: Create & Sign a JWT (JWS)
             // ============================================================
-            */
-/*
+            /*
              * Creating a JWS (JSON Web Signature):
              * - Protects the integrity of the token (any tampering is detectable)
              * - Claims:
-             *   - "sub": subject (who/what the token is about)
-             *   - "iat": issued at
-             *   - "exp": expiration
+             * - "sub": subject (who/what the token is about)
+             * - "iat": issued at
+             * - "exp": expiration
              * - Signed using the symmetric HMAC key (HS256)
              * - Resulting compact JWT has 3 parts: header.payload.signature
-             *//*
-
+             */
             String jws = Jwts.builder()
                     .claim("sub", "crypto-demo")
                     .issuedAt(now)
@@ -79,12 +70,10 @@ public class JjwtCryptoSample_13 {
             // ============================================================
             // Step 3: Simulate token expiration
             // ============================================================
-            */
-/*
+            /*
              * To demonstrate ExpiredJwtException handling, sleep > token expiry
              * This simulates trying to parse an expired token
-             *//*
-
+             */
             logger.info("Sleeping 6 seconds so tokens expire...");
             Thread.sleep(6000);
 
@@ -92,8 +81,7 @@ public class JjwtCryptoSample_13 {
             // Step 4: Verify Signed JWT (JWS Parsing)
             // ============================================================
             try {
-                */
-/*
+                /*
                  * Parsing and verifying a JWS:
                  * - .verifyWith(hmacKey): must use the same key used to sign
                  * - .parseSignedClaims(jws): validates signature and expiration
@@ -101,8 +89,7 @@ public class JjwtCryptoSample_13 {
                  * Exceptions:
                  * - ExpiredJwtException: thrown if token has expired
                  * - JwtException: thrown for invalid signature, malformed token, etc.
-                 *//*
-
+                 */
                 Jws<Claims> parsedJws = Jwts.parser()
                         .verifyWith(hmacKey)
                         .build()
@@ -119,22 +106,20 @@ public class JjwtCryptoSample_13 {
             // ============================================================
             // Step 5: Encrypt a JWT (JWE)
             // ============================================================
-            */
-/*
+            /*
              * Creating a JWE (JSON Web Encryption):
              * - Protects confidentiality: payload cannot be read without the private key
              * - Uses two algorithms:
-             *   - Key Management: RSA-OAEP (asymmetric)
-             *     → encrypts a randomly generated AES key with public key
-             *   - Content Encryption: AES-256-GCM (symmetric)
-             *     → encrypts the payload securely
+             * - Key Management: RSA-OAEP (asymmetric)
+             * → encrypts a randomly generated AES key with public key
+             * - Content Encryption: AES-256-GCM (symmetric)
+             * → encrypts the payload securely
              * - Claims:
-             *   - "sub": subject
-             *   - "iat": issued at
-             *   - "exp": expiration
+             * - "sub": subject
+             * - "iat": issued at
+             * - "exp": expiration
              * - Output: compact JWT with 5 parts: header.encryptedKey.iv.ciphertext.tag
-             *//*
-
+             */
             String originalSubject = "encrypted-demo"; // store original claim for verification
 
             String jwe = Jwts.builder()
@@ -154,18 +139,16 @@ public class JjwtCryptoSample_13 {
             // Step 6: Decrypt the JWE
             // ============================================================
             try {
-                */
-/*
+                /*
                  * Parsing and decrypting a JWE:
                  * - .decryptWith(privateKey, keyAlgorithm, encAlgorithm)
-                 *   → must use the private key corresponding to public key used to encrypt
+                 * → must use the private key corresponding to public key used to encrypt
                  * - .parseEncryptedClaims(jwe)
                  *
                  * Exceptions:
                  * - ExpiredJwtException: token expired
                  * - JwtException: decryption error, wrong key, tampered token
-                 *//*
-
+                 */
                 Jwe<Claims> decrypted = Jwts.parser()
                         .decryptWith(rsaKeyPair.getPrivate())
                         .build()
@@ -177,12 +160,10 @@ public class JjwtCryptoSample_13 {
                 // ============================================================
                 // Step 7: Verify Decrypted Claim Matches Original
                 // ============================================================
-                */
-/*
+                /*
                  * Ensure that the decrypted payload matches the original input:
                  * - Helps detect tampering or errors in encryption/decryption process
-                 *//*
-
+                 */
                 if (originalSubject.equals(decryptedSubject)) {
                     logger.info("SUCCESS: Decrypted claim matches the original claim.");
                 } else {
@@ -199,4 +180,4 @@ public class JjwtCryptoSample_13 {
             logger.error("Unexpected error occurred: {}", e.getMessage(), e);
         }
     }
-}*/
+}

@@ -1,89 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Basic project identification -->
     <groupId>org.coding</groupId>
     <artifactId>Java_CryptoModules</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <!-- Java compiler configuration -->
         <maven.compiler.source>24</maven.compiler.source>
         <maven.compiler.target>24</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Centralize Bouncy Castle versions -->
-        <bouncycastle.version>1.81</bouncycastle.version>
+
+        <!-- Centralized version management for security libraries -->
+        <bouncycastle.version>1.80</bouncycastle.version>
+        <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
-    <!-- Add the Bouncy Castle Maven repository -->
-    <repositories>
-        <repository>
-            <id>bouncycastle</id>
-            <name>Bouncy Castle Public Maven Repository</name>
-            <url>https://repo.bouncycastle.org/maven</url>
-        </repository>
-    </repositories>
-
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jasypt</artifactId>
-            <version>4.8.0</version>
-        </dependency>
 
-        <!-- Bouncy Castle Core Provider with PQC algorithms included -->
+        <!--
+        BouncyCastle Cryptography Provider
+        Core cryptographic implementation library.
+        Provides implementations for encryption, hashing, digital signatures,
+        key generation, secure random, and advanced algorithms not present
+        in default Java security providers.
+        -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
 
-        <!-- Bouncy Castle PKIX/CMS APIs for JDK 1.8 and later -->
+        <!--
+        BouncyCastle PKIX / Certificate APIs
+        Used for working with X.509 certificates, PKCS structures,
+        certificate signing requests (CSR), certificate chains,
+        and public key infrastructure (PKI) operations.
+        -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk18on</artifactId>
             <version>${bouncycastle.version}</version>
         </dependency>
-        <!-- API (interfaces + Jwts facade) -->
+
+
+        <!--
+        JJWT API
+        JSON Web Token library used to create, sign, parse,
+        and validate JWT tokens for authentication and authorization.
+        Contains only interfaces and public API definitions.
+        -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-            <!-- <version>0.13.0</version> -->
+            <version>${jjwt.version}</version>
         </dependency>
-        <!-- Implementation (contains parserBuilder() + runtime logic) -->
+
+        <!--
+        JJWT Implementation
+        Runtime implementation of the JWT API.
+        Provides the actual logic for signing and verifying tokens.
+        Marked as runtime because applications typically depend
+        only on the API at compile time.
+        -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
-            <!-- <version>0.13.0</version> -->
+            <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!--
+        JJWT Jackson Integration
+        Provides JSON serialization/deserialization support
+        using Jackson for JWT payloads and claims.
+        Required when using JSON-based token payload structures.
+        -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
-            <!-- <version>0.13.0</version> -->
+            <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!--
+        JSch (Java Secure Channel)
+        Java implementation of SSH2 protocol.
+        Used for:
+        - Secure remote login
+        - SFTP file transfers
+        - SSH tunneling
+        - Executing commands on remote servers
+        -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.55</version>
+        </dependency>
+
+        <!--
+        Apache Camel Jasypt Integration
+        Provides encryption/decryption support for configuration
+        properties using Jasypt (Java Simplified Encryption).
+        Useful for securing sensitive values such as passwords,
+        API keys, and database credentials in configuration files.
+        -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jasypt</artifactId>
+            <version>4.8.0</version>
+        </dependency>
+
+        <!--
+        SLF4J Simple Logger
+        Lightweight logging implementation for SLF4J.
+        Provides basic console logging without requiring
+        complex logging frameworks like Logback or Log4j.
+        Suitable for small utilities or development environments.
+        -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.16</version> <!-- match your slf4j-api version -->
+            <version>2.0.16</version>
         </dependency>
+
     </dependencies>
+
     <build>
         <plugins>
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
                     <source>24</source>
                     <target>24</target>

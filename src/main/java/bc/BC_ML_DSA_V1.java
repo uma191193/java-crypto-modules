@@ -1,11 +1,11 @@
-/*
 package bc;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.pqc.jcajce.spec.MLDSAParameterSpec;
+import org.bouncycastle.jcajce.spec.MLDSAParameterSpec;
 
 import java.security.*;
-import java.security.spec.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 public class BC_ML_DSA_V1 {
     public static void main(String[] args) throws Exception {
@@ -16,7 +16,7 @@ public class BC_ML_DSA_V1 {
 
         // 1. Generate ML-DSA key pair
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("ML-DSA", "BCPQC");
-        kpg.initialize(MLDSAParameterSpec.ml_dsa_3); // levels: 2, 3, 5
+        kpg.initialize(MLDSAParameterSpec.ml_dsa_87); // levels: 2, 3, 5
         KeyPair kp = kpg.generateKeyPair();
 
         // 2. Sign a message
@@ -48,5 +48,3 @@ public class BC_ML_DSA_V1 {
         System.out.println("Restored private key algorithm: " + restoredPriv.getAlgorithm());
     }
 }
-
-*/

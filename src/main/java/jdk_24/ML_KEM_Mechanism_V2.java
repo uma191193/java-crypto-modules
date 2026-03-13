@@ -1,4 +1,3 @@
-/*
 package jdk_24;
 
 import javax.crypto.Cipher;
@@ -14,7 +13,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.HexFormat;
 
-*/
 /**
  * ML_KEM_Mechanism_V2
  * -------------------
@@ -33,7 +31,7 @@ import java.util.HexFormat;
  * KeyFactory is the JCA/JCE bridge that turns between:
  * - Encoded forms <-> Java Key objects
  * This is essential for interoperability and persistence.
- *//*
+ */
 
 public class ML_KEM_Mechanism_V2 {
 
@@ -169,4 +167,4 @@ public class ML_KEM_Mechanism_V2 {
             System.out.println("Verification failed: Mismatch detected!");
         }
     }
-}*/
+}

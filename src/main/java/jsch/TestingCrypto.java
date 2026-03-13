@@ -1,4 +1,3 @@
-/*
 package jsch;
 
 // Import necessary classes from the JSch library
@@ -29,22 +28,20 @@ public class TestingCrypto {
             // This reads both public and private key information from the file
             KeyPair kpair = KeyPair.load(jsch, privateKeyPath);
 
-            */
-/*
+            /*
             // [Optional]: You can uncomment the following lines to generate and save new key pairs
 
             // Example: Generate an RSA key (2 = KeyPair.RSA)
-            KeyPair kpair = KeyPair.genKeyPair(jsch, 2);
-            kpair.writePrivateKey("...path...");
-            kpair.writePublicKey("...path...", "comment");
+            KeyPair kpairGen = KeyPair.genKeyPair(jsch, 2);
+            kpairGen.writePrivateKey("...path...");
+            kpairGen.writePublicKey("...path...", "comment");
 
             // Example: Generate a DSA key (1 = KeyPair.DSA)
-            KeyPair kpair = KeyPair.genKeyPair(jsch, 1);
+            KeyPair kpairDsa = KeyPair.genKeyPair(jsch, 1);
 
             // Example: Generate ECDSA key with curve size 256
-            KeyPair kpair = KeyPair.genKeyPair(jsch, KeyPair.ECDSA, 256);
-            *//*
-
+            KeyPair kpairEcdsa = KeyPair.genKeyPair(jsch, KeyPair.ECDSA, 256);
+            */
 
             // Step 5: Create a new KeyPairRSA manually (used here only for demo, not linked to `kpair`)
             // This constructor alone does not load key data — you must manually set modulus, exponents etc. (not shown here)
@@ -90,4 +87,3 @@ public class TestingCrypto {
         }
     }
 }
-*/

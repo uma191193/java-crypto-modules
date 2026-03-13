@@ -1,4 +1,3 @@
-/*
 package jsch;
 
 import com.jcraft.jsch.JSch;
@@ -51,12 +50,10 @@ public class TestingCryptoDSA {
         keyPairDSA.dispose();
     }
 
-    */
-/**
+    /**
      * Utility method to convert a byte array into a hexadecimal string.
      * Useful for printing raw bytes like signatures or hashes in a readable form.
-     *//*
-
+     */
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
 
@@ -67,5 +64,3 @@ public class TestingCryptoDSA {
         return sb.toString();
     }
 }
-
-*/

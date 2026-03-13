@@ -1,4 +1,3 @@
-/*
 package jdk_24;
 
 import javax.crypto.Cipher;
@@ -16,7 +15,6 @@ import java.util.HexFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-*/
 /**
  * ML_KEM_Mechanism_V3
  * -------------------
@@ -38,7 +36,7 @@ import java.util.logging.Logger;
  * * Use secure key storage (HSM/keystore) instead of raw byte arrays.
  * * Zero sensitive material when possible (Arrays.fill on byte[]; destroy keys if possible).
  * * Consider authenticity and replay protections for capsules and IVs.
- *//*
+ */
 
 public class ML_KEM_Mechanism_V3 {
 
@@ -310,4 +308,3 @@ public class ML_KEM_Mechanism_V3 {
         }
     }
 }
-*/

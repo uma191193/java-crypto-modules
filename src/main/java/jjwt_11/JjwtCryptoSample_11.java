@@ -10,7 +10,6 @@ import javax.crypto.SecretKey;
 import java.security.KeyPair;
 import java.util.Date;
 
-*/
 /**
  * Demonstrates how to use JJWT 0.11.5 with Java 24 for:
  * 1. Generating symmetric (HMAC) and asymmetric (RSA) keys
@@ -19,8 +18,7 @@ import java.util.Date;
  * 4. Handling token expiration and tampering
  * NOTE: JJWT 0.11.5 does NOT support JWE (encryption/decryption).
  * Only signed JWTs (JWS) are demonstrated here.
- *//*
-
+ * /
 public class JjwtCryptoSample_11 {
 
     private static final Logger logger = LoggerFactory.getLogger(JjwtCryptoSample_11.class);
@@ -31,21 +29,17 @@ public class JjwtCryptoSample_11 {
             // Step 1: Generate Keys
             // ============================================================
 
-            */
-/*
+            /*
              * Symmetric key for HS256 (HMAC with SHA-256).
              * Same key is used for both signing and verifying.
-             *//*
-
+             * /
             SecretKey hmacKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-            */
-/*
+            /*
              * Asymmetric RSA key pair for RS256 (RSA + SHA-256).
              * Private key: used to sign the token.
              * Public key: used to verify the token.
-             *//*
-
+             * /
             KeyPair rsaKeyPair = Keys.keyPairFor(SignatureAlgorithm.RS256);
 
             // Define issued-at and expiration timestamps
@@ -56,14 +50,12 @@ public class JjwtCryptoSample_11 {
             // Step 2: Create & Sign a JWT with HMAC
             // ============================================================
 
-            */
-/*
+            /*
              * Building a JWT signed with HS256:
              * - Subject: "hmac-demo"
              * - IssuedAt + Expiration
              * - Signed with secret key
-             *//*
-
+             * /
             String hmacJws = Jwts.builder()
                     .setSubject("hmac-demo")
                     .setIssuedAt(now)
@@ -77,13 +69,11 @@ public class JjwtCryptoSample_11 {
             // Step 3: Create & Sign a JWT with RSA
             // ============================================================
 
-            */
-/*
+            /*
              * Building a JWT signed with RS256:
              * - Subject: "rsa-demo"
              * - Uses RSA private key for signing
-             *//*
-
+             * /
             String rsaJws = Jwts.builder()
                     .setSubject("rsa-demo")
                     .setIssuedAt(now)
@@ -105,8 +95,7 @@ public class JjwtCryptoSample_11 {
             // ============================================================
 
             try {
-                */
-/*
+                /*
                  * Parsing HMAC JWS:
                  * - Uses the same secret key that was used to sign.
                  * - Automatically verifies signature and expiration.
@@ -114,8 +103,7 @@ public class JjwtCryptoSample_11 {
                  * Possible exceptions:
                  * - ExpiredJwtException: if token is expired
                  * - JwtException: if signature is invalid, or token is malformed
-                 *//*
-
+                 * /
                 Jws<Claims> parsedHmac = Jwts.parserBuilder()
                         .setSigningKey(hmacKey)
                         .build()
@@ -134,12 +122,10 @@ public class JjwtCryptoSample_11 {
             // ============================================================
 
             try {
-                */
-/*
+                /*
                  * Parsing RSA JWS:
                  * - Uses the public key corresponding to the private key used for signing.
-                 *//*
-
+                 * /
                 Jws<Claims> parsedRsa = Jwts.parserBuilder()
                         .setSigningKey(rsaKeyPair.getPublic())
                         .build()
@@ -179,4 +165,5 @@ public class JjwtCryptoSample_11 {
             logger.error("Unexpected error in demo: {}", e.getMessage(), e);
         }
     }
-}*/
+}
+*/

@@ -1,4 +1,3 @@
-/*
 package jjwt_13;
 
 // Import classes from the JJWT library and Java standard APIs
@@ -65,4 +64,4 @@ public class SymmetricJweExample_13 {
         // Convert the decrypted bytes back to a string using UTF-8 (should match the original message)
         System.out.println("Decrypted payload: " + new String(decrypted, StandardCharsets.UTF_8));
     }
-}*/
+}

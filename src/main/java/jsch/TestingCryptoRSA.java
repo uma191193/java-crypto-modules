@@ -1,4 +1,3 @@
-/*
 package jsch;
 
 // Importing required classes from the JSch library
@@ -8,14 +7,12 @@ import com.jcraft.jsch.KeyPair;
 import com.jcraft.jsch.KeyPairRSA;
 import com.jcraft.jsch.Signature;
 
-*/
 /**
  * This class demonstrates how to:
  * 1. Generate an RSA key pair in memory (2048-bit)
  * 2. Use the private key to digitally sign a message
  * 3. Print the resulting signature in hexadecimal form
- *//*
-
+ */
 public class TestingCryptoRSA {
 
     public static void main(String[] args) throws Exception {
@@ -61,12 +58,10 @@ public class TestingCryptoRSA {
         keyPairRSA.dispose();
     }
 
-    */
-/**
+    /**
      * Utility method to convert a byte array into a hexadecimal string.
      * Useful for printing raw bytes like signatures or hashes in a readable form.
-     *//*
-
+     */
     public static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
 
@@ -77,4 +72,3 @@ public class TestingCryptoRSA {
         return sb.toString();
     }
 }
-*/

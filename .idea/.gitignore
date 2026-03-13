@@ -8,3 +8,20 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.classpath
+*.project
+.settings/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

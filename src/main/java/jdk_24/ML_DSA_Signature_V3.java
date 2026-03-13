@@ -1,4 +1,3 @@
-/*
 package jdk_24;
 
 import java.nio.charset.StandardCharsets;
@@ -11,7 +10,6 @@ import java.util.HexFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-*/
 /**
  * ML_DSA_Signature_V3
  * -------------------
@@ -37,8 +35,7 @@ import java.util.logging.Logger;
  * resist quantum computer attacks (post-quantum secure).
  * - This demo is educational: it shows parameter binding, round-trip safety,
  * and interoperability of the ML-DSA family in JDK 24.
- *//*
-
+ */
 public class ML_DSA_Signature_V3 {
 
     private static final Logger logger = Logger.getLogger(ML_DSA_Signature_V3.class.getName());
@@ -181,4 +178,3 @@ public class ML_DSA_Signature_V3 {
         }
     }
 }
-*/

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
-*/
 /**
  * Java 24 + JJWT 0.11.5 Demo: Using Keys.hmacShaKeyFor for HMAC JWTs
  * using a single JWT builder and inline verification.
@@ -29,8 +28,7 @@ import java.util.Date;
  * - Checks signature integrity using the same key.
  * - Automatically checks token expiration.
  * - Throws exceptions for expired or tampered tokens.
- *//*
-
+ * /
 public class JjwtHmacShaKeyForDemo {
 
     private static final Logger logger = LoggerFactory.getLogger(JjwtHmacShaKeyForDemo.class);
@@ -47,15 +45,14 @@ public class JjwtHmacShaKeyForDemo {
             // Converts byte array into a SecretKey for HMAC signing
             SecretKey hmacKey = Keys.hmacShaKeyFor(rawKeyBytes);
 
-            */
-/*
+            /*
              * Choosing the algorithm:
              * - HS256: secure, widely used, minimum 32 bytes
              * - HS384: stronger than HS256, minimum 48 bytes
              * - HS512: strongest HMAC, minimum 64 bytes
              *
              * When building the JWT, you select the algorithm. The SecretKey must meet the algorithm's size requirement.
-             *//*
+             * /
 
 
             // ============================================================
@@ -141,4 +138,5 @@ public class JjwtHmacShaKeyForDemo {
             logger.error("Unexpected error in demo: {}", e.getMessage(), e);
         }
     }
-}*/
+}
+*/

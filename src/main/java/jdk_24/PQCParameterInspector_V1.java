@@ -1,4 +1,3 @@
-/*
 package jdk_24;
 
 import java.security.KeyPair;
@@ -83,5 +82,3 @@ public class PQCParameterInspector_V1 {
         System.out.println("Default ML-DSA param: " + detectDefaultParam("ML-DSA"));
     }
 }
-
-*/

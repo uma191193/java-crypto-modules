@@ -1,4 +1,3 @@
-/*
 package jdk_24;
 
 import java.security.KeyPair;
@@ -45,15 +44,13 @@ public class PQCParameterInspector_V2 {
         return OID_MAP.getOrDefault(oid, "Unknown OID: " + oid);
     }
 
-    */
-/**
+    /**
      * Extracts the OID of the algorithm from a DER-encoded X.509 SubjectPublicKeyInfo structure.
      * This is a robust method that searches for the OID tag (0x06).
      *
      * @param encoded The DER-encoded X.509 SubjectPublicKeyInfo bytes.
      * @return The OID as a dotted string, or "Unknown" if not found.
-     *//*
-
+     */
     private static String extractOIDFromX509(byte[] encoded) {
         // Search for OID tag (0x06) and length byte
         for (int i = 0; i < encoded.length - 2; i++) {
@@ -96,4 +93,3 @@ public class PQCParameterInspector_V2 {
         System.out.println("Default ML-DSA param: " + detectDefaultParam("ML-DSA"));
     }
 }
-*/
