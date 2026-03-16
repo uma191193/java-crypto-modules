@@ -69,7 +69,6 @@ public class AES_Bytes_Encryption_Demo_V1 {
     public static void main(String[] args) {
 
         logger.info("========== AES ENCRYPTION DEMO STARTED ==========");
-
         try {
 
             //--------------------------------------------------------------
@@ -88,11 +87,8 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             final String password = "UltraSecureEncryptionPassword2026";
-
             Objects.requireNonNull(password, "Encryption password cannot be null");
-
             String salt = KeyGenerators.string().generateKey();
-
             logger.info("Salt generated successfully.");
             logger.info("Generated salt value: " + salt);
 
@@ -111,7 +107,6 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             AesBytesEncryptor aesBytesEncryptor = new AesBytesEncryptor(password, salt);
-
             logger.info("AES aesBytesEncryptor successfully initialized.");
 
             //--------------------------------------------------------------
@@ -119,11 +114,8 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
 
             String sensitiveData = "Spring Security AES Encryption Example 2026";
-
             Objects.requireNonNull(sensitiveData, "Sensitive data cannot be null");
-
             byte[] plaintext = sensitiveData.getBytes(StandardCharsets.UTF_8);
-
             logger.info("Plaintext prepared for encryption.");
             logger.info("Plaintext length: " + plaintext.length + " bytes");
 
@@ -143,11 +135,8 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             byte[] ciphertext = aesBytesEncryptor.encrypt(plaintext);
-
             logger.info("Encryption completed successfully.");
-
             String encodedCiphertext = Base64.getEncoder().encodeToString(ciphertext);
-
             logger.info("Ciphertext (Base64): " + encodedCiphertext);
             logger.info("Ciphertext length: " + ciphertext.length + " bytes");
 
@@ -167,9 +156,7 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             byte[] decryptedBytes = aesBytesEncryptor.decrypt(ciphertext);
-
             String decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
-
             logger.info("Decryption completed successfully.");
             logger.info("Decrypted text: " + decryptedText);
 
@@ -181,7 +168,6 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             boolean integrityCheck = sensitiveData.equals(decryptedText);
-
             if (integrityCheck) {
                 logger.info("Integrity verification: SUCCESS");
             } else {
@@ -197,14 +183,10 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //
 
             byte[] ciphertext2 = aesBytesEncryptor.encrypt(plaintext);
-
             String encodedCiphertext2 = Base64.getEncoder().encodeToString(ciphertext2);
-
             logger.info("Second encryption result:");
             logger.info(encodedCiphertext2);
-
             boolean isDifferent = !encodedCiphertext.equals(encodedCiphertext2);
-
             logger.info("Ciphertexts are different (expected): " + isDifferent);
             logger.info("========== AES ENCRYPTION DEMO COMPLETED ==========");
         }
@@ -216,6 +198,5 @@ public class AES_Bytes_Encryption_Demo_V1 {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unexpected system error occurred during encryption workflow.", ex);
         }
-
     }
 }
