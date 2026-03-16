@@ -1,4 +1,4 @@
-package spring_security.argon2;
+package spring_security.crypto.argon2;
 
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 
