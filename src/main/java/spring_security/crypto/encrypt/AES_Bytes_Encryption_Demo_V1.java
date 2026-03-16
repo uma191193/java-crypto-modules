@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * AES_Bytes_Encryption_Demo_V1
+ * AES_Bytes_Encryption_Demo_V12
  * ------------------------------------------------------------------
  * This program demonstrates secure AES encryption and decryption
  * using Spring Security's AesBytesEncryptor.
