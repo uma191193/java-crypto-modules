@@ -74,17 +74,13 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 1: DEFINE PASSWORD AND GENERATE SALT
             //--------------------------------------------------------------
-            //
             // AES requires a secret key.
-            //
             // Instead of storing a raw key, Spring Security derives
             // a key from a password and salt using PBKDF2.
-            //
             // Salt properties:
             // • ensures password uniqueness
             // • prevents rainbow table attacks
             // • adds entropy to key derivation
-            //
 
             final String password = "UltraSecureEncryptionPassword2026";
             Objects.requireNonNull(password, "Encryption password cannot be null");
@@ -95,16 +91,11 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 2: INITIALIZE AES ENCRYPTOR
             //--------------------------------------------------------------
-            //
-            // Constructor:
-            //      AesBytesEncryptor(password, salt)
-            //
+            // Constructor: AesBytesEncryptor(password, salt)
             // Internal operations:
-            //
             // 1) Derive AES key using PBKDF2
             // 2) Configure cipher AES/CBC/PKCS5Padding
             // 3) Prepare secure random IV generator
-            //
 
             AesBytesEncryptor aesBytesEncryptor = new AesBytesEncryptor(password, salt);
             logger.info("AES aesBytesEncryptor successfully initialized.");
@@ -122,17 +113,13 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 4: PERFORM ENCRYPTION
             //--------------------------------------------------------------
-            //
             // encrypt(byte[])
-            //
             // Process:
-            //
             // plaintext
             //    │
             // AES encryption with random IV
             //    │
             // ciphertext
-            //
 
             byte[] ciphertext = aesBytesEncryptor.encrypt(plaintext);
             logger.info("Encryption completed successfully.");
@@ -143,17 +130,13 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 5: PERFORM DECRYPTION
             //--------------------------------------------------------------
-            //
             // decrypt(byte[])
-            //
             // Reverse operation:
-            //
             // ciphertext
             //     │
             // AES decryption
             //     │
             // original plaintext
-            //
 
             byte[] decryptedBytes = aesBytesEncryptor.decrypt(ciphertext);
             String decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
@@ -163,9 +146,7 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 6: VERIFY DATA INTEGRITY
             //--------------------------------------------------------------
-            //
             // The decrypted value should match the original plaintext.
-            //
 
             boolean integrityCheck = sensitiveData.equals(decryptedText);
             if (integrityCheck) {
@@ -177,10 +158,8 @@ public class AES_Bytes_Encryption_Demo_V1 {
             //--------------------------------------------------------------
             // STEP 7: DEMONSTRATE NON-DETERMINISTIC ENCRYPTION
             //--------------------------------------------------------------
-            //
             // Encrypting the same plaintext again produces a different
             // ciphertext because each encryption uses a random IV.
-            //
 
             byte[] ciphertext2 = aesBytesEncryptor.encrypt(plaintext);
             String encodedCiphertext2 = Base64.getEncoder().encodeToString(ciphertext2);

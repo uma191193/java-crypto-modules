@@ -1,7 +1,6 @@
 package spring_security.crypto.encrypt;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
-import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
@@ -96,17 +95,11 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // STEP 1: DEFINE PASSWORD AND GENERATE SALT
             //------------------------------------------------------------------
-            //
-            // Spring Security derives the AES key using:
-            //
-            //      password + salt
-            //
+            // Spring Security derives the AES key using: password + salt
             // via PBKDF2 key derivation.
-            //
             // Salt ensures:
             // • stronger randomness
             // • protection against rainbow-table attacks
-            //
 
             String password = "SecurePassword2026";
             Objects.requireNonNull(password, "Encryption password cannot be null.");
@@ -117,12 +110,8 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // STEP 2: INITIALIZATION VECTOR GENERATOR
             //------------------------------------------------------------------
-            //
             // AES block size = 16 bytes
-            //
-            // The IV generator produces cryptographically secure
-            // random IV values required for encryption.
-            //
+            // The IV generator produces cryptographically secure random IV values required for encryption.
 
             BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(16);
             logger.info("Secure IV generator initialized.");
@@ -130,24 +119,15 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // STEP 3: INITIALIZE AES ENCRYPTOR WITH CBC ALGORITHM
             //------------------------------------------------------------------
-            //
-            // Constructor used:
-            //
-            // AesBytesEncryptor(password, salt, ivGenerator, algorithm)
-            //
-            // Algorithm selected:
-            //
-            //      CipherAlgorithm.CBC
-            //
+            // Constructor used: AesBytesEncryptor(password, salt, ivGenerator, algorithm)
+            // Algorithm selected: CipherAlgorithm.CBC
             // Internally Spring Security performs:
-            //
             // 1) PBKDF2 key derivation
             // 2) AES key generation
             // 3) IV creation
             // 4) AES-CBC encryption
-            //
 
-            BytesEncryptor encryptor = new AesBytesEncryptor(password, salt, ivGenerator, AesBytesEncryptor.CipherAlgorithm.CBC);
+            AesBytesEncryptor encryptor = new AesBytesEncryptor(password, salt, ivGenerator, AesBytesEncryptor.CipherAlgorithm.CBC);
             logger.info("AES encryptor initialized using CBC mode.");
 
             //------------------------------------------------------------------
@@ -163,9 +143,7 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // STEP 5: PERFORM ENCRYPTION
             //------------------------------------------------------------------
-            //
             // encrypt(byte[])
-            //
             // plaintext
             //     │
             //     ▼
@@ -173,7 +151,6 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //     │
             //     ▼
             // ciphertext
-            //
 
             byte[] encrypted = encryptor.encrypt(plaintext);
             logger.info("Encryption completed successfully.");
@@ -189,9 +166,7 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // STEP 7: PERFORM DECRYPTION
             //------------------------------------------------------------------
-            //
             // decrypt(byte[])
-            //
 
             byte[] decrypted = encryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);

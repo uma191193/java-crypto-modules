@@ -1,7 +1,6 @@
 package spring_security.crypto.encrypt;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
-import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
@@ -88,17 +87,10 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 1: DEFINE PASSWORD AND GENERATE SALT
             //------------------------------------------------------------------
-            //
             // The encryption key will not be directly stored.
-            //
-            // Instead Spring Security derives an AES key using:
-            //
-            //      password + salt
-            //
+            // Instead Spring Security derives an AES key using: password + salt
             // via PBKDF2 key derivation.
-            //
             // The salt adds randomness and prevents rainbow-table attacks.
-            //
 
             String password = "SecurePassword2026";
             Objects.requireNonNull(password, "Encryption password cannot be null.");
@@ -109,16 +101,11 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 2: CREATE CUSTOM IV GENERATOR
             //------------------------------------------------------------------
-            //
             // A BytesKeyGenerator produces cryptographically secure
             // random bytes used as an Initialization Vector (IV).
-            //
             // AES requires a 16-byte IV because AES block size = 128 bits.
-            //
             // KeyGenerators.secureRandom(16)
-            //
             // creates a generator that produces 16-byte random values.
-            //
 
             BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(16);
             logger.info("IV Generator initialized (16 bytes).");
@@ -126,27 +113,19 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 3: INITIALIZE AES BYTES ENCRYPTOR
             //------------------------------------------------------------------
-            //
-            // Constructor used in this demo:
-            //
-            // AesBytesEncryptor(password, salt, ivGenerator)
-            //
+            // Constructor used in this demo: AesBytesEncryptor(password, salt, ivGenerator)
             // Internally performs:
-            //
             // 1) PBKDF2 key derivation
             // 2) AES cipher initialization
             // 3) IV generation through provided generator
-            //
 
-            BytesEncryptor encryptor = new AesBytesEncryptor(password, salt, ivGenerator);
+            AesBytesEncryptor encryptor = new AesBytesEncryptor(password, salt, ivGenerator);
             logger.info("AES encryptor successfully initialized.");
 
             //------------------------------------------------------------------
             // STEP 4: PREPARE PLAINTEXT DATA
             //------------------------------------------------------------------
-            //
             // Convert plaintext string to UTF-8 encoded bytes.
-            //
 
             String data = "AES Encryption with Custom IV Generator";
             Objects.requireNonNull(data, "Input data cannot be null.");
@@ -157,11 +136,8 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 5: PERFORM ENCRYPTION
             //------------------------------------------------------------------
-            //
             // encrypt(byte[])
-            //
             // Steps internally:
-            //
             // plaintext
             //      │
             //      ▼
@@ -169,7 +145,6 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //      │
             //      ▼
             // ciphertext
-            //
 
             byte[] encrypted = encryptor.encrypt(plaintext);
             logger.info("Encryption completed successfully.");
@@ -177,11 +152,8 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 6: ENCODE CIPHERTEXT FOR DISPLAY
             //------------------------------------------------------------------
-            //
             // Binary ciphertext is not readable.
-            //
             // Base64 encoding converts it to a printable string.
-            //
 
             String encodedCiphertext = Base64.getEncoder().encodeToString(encrypted);
             logger.info("Encrypted Data (Base64): " + encodedCiphertext);
@@ -190,17 +162,13 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 7: PERFORM DECRYPTION
             //------------------------------------------------------------------
-            //
             // decrypt(byte[])
-            //
             // Reverse process:
-            //
             // ciphertext
             //      │
             // AES decryption
             //      │
             // original plaintext
-            //
 
             byte[] decrypted = encryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
@@ -210,9 +178,7 @@ public class AES_Bytes_Encryption_Demo_V2 {
             //------------------------------------------------------------------
             // STEP 8: INTEGRITY VERIFICATION
             //------------------------------------------------------------------
-            //
             // Verify decrypted text equals original plaintext.
-            //
 
             boolean integrityCheck = data.equals(decryptedText);
             if (integrityCheck) {

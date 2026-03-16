@@ -1,7 +1,6 @@
 package spring_security.crypto.encrypt;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
-import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
@@ -93,18 +92,12 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //------------------------------------------------------------------
             // STEP 1: GENERATE AES SECRET KEY
             //------------------------------------------------------------------
-            //
-            // Java Cryptography Architecture (JCA) provides a KeyGenerator
-            // that can produce secure AES keys.
-            //
+            // Java Cryptography Architecture (JCA) provides a KeyGenerator that can produce secure AES keys.
             // AES supports key sizes:
-            //
             // 128-bit
             // 192-bit
             // 256-bit
-            //
             // We use AES-256 for stronger security.
-            //
 
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(256);
@@ -115,11 +108,8 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //------------------------------------------------------------------
             // STEP 2: INITIALIZATION VECTOR GENERATOR
             //------------------------------------------------------------------
-            //
             // AES block size = 16 bytes (128 bits)
-            //
             // Therefore IV length should be 16 bytes.
-            //
 
             BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(16);
             logger.info("Secure IV generator initialized.");
@@ -127,23 +117,14 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //------------------------------------------------------------------
             // STEP 3: INITIALIZE AES ENCRYPTOR
             //------------------------------------------------------------------
-            //
-            // Constructor used in this demo:
-            //
-            // AesBytesEncryptor(secretKey, ivGenerator, algorithm)
-            //
-            // Algorithm selected:
-            //
-            //      AES-GCM
-            //
+            // Constructor used in this demo: AesBytesEncryptor(secretKey, ivGenerator, algorithm)
+            // Algorithm selected: AES-GCM
             // Internal operations performed by Spring Security:
-            //
             // 1) AES cipher initialization
             // 2) IV generation
             // 3) AES-GCM encryption
-            //
 
-            BytesEncryptor encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
+            AesBytesEncryptor encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
             logger.info("AES encryptor initialized using SecretKey + GCM.");
 
             //------------------------------------------------------------------
@@ -159,7 +140,6 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //------------------------------------------------------------------
             // STEP 5: PERFORM ENCRYPTION
             //------------------------------------------------------------------
-            //
             // encrypt(byte[])
             //
             // plaintext
@@ -169,7 +149,6 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //      │
             //      ▼
             // ciphertext + authentication tag
-            //
 
             byte[] encrypted = encryptor.encrypt(plaintext);
             logger.info("Encryption completed successfully.");
@@ -185,11 +164,8 @@ public class AES_Bytes_Encryption_Demo_V4 {
             //------------------------------------------------------------------
             // STEP 7: PERFORM DECRYPTION
             //------------------------------------------------------------------
-            //
             // decrypt(byte[])
-            //
             // AES-GCM verifies the authentication tag automatically.
-            //
 
             byte[] decrypted = encryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
