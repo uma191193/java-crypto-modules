@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt;
+package spring_security.crypto.encrypt.rsarawencryption;
 
 import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
 

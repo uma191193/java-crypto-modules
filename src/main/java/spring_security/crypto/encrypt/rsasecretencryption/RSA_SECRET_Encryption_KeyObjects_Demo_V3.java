@@ -1,107 +1,83 @@
-package spring_security.crypto.encrypt;
+package spring_security.crypto.encrypt.rsasecretencryption;
 
-import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
+import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_RAW_Encryption_KeyObjects_Demo_V6
+ * RSA_SECRET_Encryption_KeyObjects_Demo_V3
  * ------------------------------------------------------------------
  * PURPOSE:
- * Demonstrates usage of: RsaRawEncryptor(String encoding, PublicKey publicKey, PrivateKey privateKey)
+ * Demonstrates usage of: RsaSecretEncryptor(String encoding,PublicKey publicKey,PrivateKey privateKey)
  * ------------------------------------------------------------------
- * WHY THIS CONSTRUCTOR?
+ * CORE CONCEPT: HYBRID ENCRYPTION
  * ------------------------------------------------------------------
- * ✔ Full control over key management
- * ✔ No dependency on PEM parsing
- * ✔ Suitable for production-grade systems
+ * Internally:
+ * 1) Generate random AES key
+ * 2) Encrypt plaintext using AES
+ * 3) Encrypt AES key using RSA (Public Key)
+ * 4) Combine → final ciphertext
  * ------------------------------------------------------------------
- * PARAMETERS EXPLAINED
+ * KEY BEHAVIOR
  * ------------------------------------------------------------------
- * encoding:
- * • Charset used for String ↔ byte conversion
- * • Typically UTF-8
- * publicKey:
- * • Used for encryption
- * privateKey:
- * • Used for decryption
- * • If NULL → decryption will FAIL
+ * ✔ PublicKey  → Encryption
+ * ✔ PrivateKey → Decryption (optional but required for full cycle)
  * ------------------------------------------------------------------
- * FLOW
+ * ADVANTAGE OVER PEM VERSION
  * ------------------------------------------------------------------
- * 1) Generate RSA key pair
- * 2) Initialize RsaRawEncryptor with keys
- * 3) Encrypt plaintext
- * 4) Decrypt ciphertext
- * 5) Verify integrity
- * ------------------------------------------------------------------
- * IMPORTANT NOTES
- * ------------------------------------------------------------------
- * ✔ Uses RAW RSA (default padding → PKCS#1 v1.5)
- * ❌ Not recommended for large data
- * ❌ Not secure as OAEP
- * ✔ Best use case:
- * • Small secrets
- * • Key wrapping (legacy)
- * ------------------------------------------------------------------
- * RECOMMENDATION
- * ------------------------------------------------------------------
- * Prefer:
- * ✔ RSA-OAEP
- * ✔ Hybrid Encryption (RSA + AES-GCM)
+ * ✔ No PEM parsing issues
+ * ✔ Strong typing (Key objects)
+ * ✔ Ideal for enterprise usage
  */
-public class RSA_RAW_Encryption_KeyObjects_Demo_V6 {
+public class RSA_SECRET_Encryption_KeyObjects_Demo_V3 {
 
-    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_KeyObjects_Demo_V6.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_SECRET_Encryption_KeyObjects_Demo_V3.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== RSA RAW KEY OBJECTS DEMO V6 STARTED ==========");
+        logger.info("========== RSA SECRET KEY OBJECTS DEMO V3 STARTED ==========");
         try {
-
             //----------------------------------------------------------
             // STEP 1: GENERATE RSA KEY PAIR
             //----------------------------------------------------------
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
-
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            PublicKey publicKey = keyPair.getPublic();
-            PrivateKey privateKey = keyPair.getPrivate();
-            logger.info("RSA KeyPair generated.");
+            logger.info("RSA KeyPair generated (2048-bit).");
+
             //----------------------------------------------------------
             // STEP 2: INITIALIZE ENCRYPTOR
             //----------------------------------------------------------
-            // encoding = UTF-8 (recommended standard)
-            RsaRawEncryptor encryptor = new RsaRawEncryptor("UTF-8", publicKey, privateKey);
-            logger.info("Encryptor initialized with key objects.");
+            // encoding = UTF-8 (controls string <-> byte conversion)
+            RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor("UTF-8", keyPair.getPublic(), keyPair.getPrivate());
+            logger.info("Encryptor initialized with Public + Private keys.");
+
             //----------------------------------------------------------
             // STEP 3: PREPARE DATA
             //----------------------------------------------------------
-            String data = "RSA Key Object Constructor Demo V6";
-            Objects.requireNonNull(data);
+            String data = "RSA Secret Encryptor V3 Demo (Key Objects)";
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext: " + data);
+
             //----------------------------------------------------------
             // STEP 4: ENCRYPT
             //----------------------------------------------------------
-            byte[] encrypted = encryptor.encrypt(plaintext);
+            byte[] encrypted = rsaSecretEncryptor.encrypt(plaintext);
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
             logger.info("Encrypted (Base64): " + base64Cipher);
+
             //----------------------------------------------------------
             // STEP 5: DECRYPT
             //----------------------------------------------------------
-            byte[] decrypted = encryptor.decrypt(encrypted);
+            byte[] decrypted = rsaSecretEncryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
             logger.info("Decrypted: " + decryptedText);
+
             //----------------------------------------------------------
             // STEP 6: VERIFY
             //----------------------------------------------------------
@@ -110,17 +86,12 @@ public class RSA_RAW_Encryption_KeyObjects_Demo_V6 {
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            logger.info("========== RSA RAW KEY OBJECTS DEMO V6 COMPLETED ==========");
+            logger.info("========== RSA SECRET DEMO V3 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
-            // Possible failures:
-            // • Invalid key usage
-            // • Missing private key (decrypt fails)
-            // • Unsupported encoding
-            //----------------------------------------------------------
-            logger.log(Level.SEVERE, "Error in RSA Key Objects Demo V6", ex);
+            logger.log(Level.SEVERE, "Error in RSA Secret Encryptor V3 demo", ex);
         }
     }
 }

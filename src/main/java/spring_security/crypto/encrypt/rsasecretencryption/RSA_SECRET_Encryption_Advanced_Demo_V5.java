@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt;
+package spring_security.crypto.encrypt.rsasecretencryption;
 
 import org.springframework.security.crypto.encrypt.RsaAlgorithm;
 import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;
@@ -83,7 +83,8 @@ public class RSA_SECRET_Encryption_Advanced_Demo_V5 {
             //----------------------------------------------------------
             // STEP 3: INITIALIZE ENCRYPTOR
             //----------------------------------------------------------
-            RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor("UTF-8", keyPair.getPublic(), keyPair.getPrivate(), algorithm, salt, useGCM);
+            RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor("UTF-8", keyPair.getPublic(),
+                    keyPair.getPrivate(), algorithm, salt, useGCM);
 
             logger.info("Encryptor initialized with advanced configuration.");
 

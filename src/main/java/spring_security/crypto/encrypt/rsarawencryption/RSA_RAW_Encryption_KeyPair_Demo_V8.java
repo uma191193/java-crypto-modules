@@ -1,79 +1,83 @@
-package spring_security.crypto.encrypt;
+package spring_security.crypto.encrypt.rsarawencryption;
 
 import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PublicKey;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_RAW_Encryption_PublicKey_Demo_V10
+ * RSA_RAW_Encryption_KeyPair_Demo_V8
  * ------------------------------------------------------------------
  * PURPOSE:
- * Demonstrates usage of: RsaRawEncryptor(PublicKey publicKey)
+ * Demonstrates usage of: RsaRawEncryptor(KeyPair keyPair)
  * ------------------------------------------------------------------
- * CORE IDEA
+ * WHY THIS CONSTRUCTOR?
  * ------------------------------------------------------------------
- * This constructor enables:
- * ✔ Encryption using ONLY public key
- * ❌ Decryption is NOT possible (no private key)
- * ------------------------------------------------------------------
- * REAL-WORLD USAGE
- * ------------------------------------------------------------------
- * ✔ Client encrypts data using server's public key
- * ✔ Only server (with private key) can decrypt
- * Examples:
- * • HTTPS handshake (conceptually)
- * • Secure API payloads
- * • Public key encryption systems
+ * ✔ Simplifies initialization (single object instead of 2 keys)
+ * ✔ Cleaner API for internal key handling
+ * ✔ Useful when key pair is already available
  * ------------------------------------------------------------------
  * INTERNAL BEHAVIOR
  * ------------------------------------------------------------------
- * Uses default RSA transformation:
- * → RSA/ECB/PKCS1Padding (legacy)
+ * • Extracts:
+ * - PublicKey  → for encryption
+ * - PrivateKey → for decryption
+ * • Uses default algorithm:
+ * → RSA/ECB/PKCS1Padding (PKCS#1 v1.5)
  * ------------------------------------------------------------------
- * IMPORTANT LIMITATION
+ * FLOW
  * ------------------------------------------------------------------
- * Calling decrypt() will throw exception:
- * → because PrivateKey is not available
+ * 1) Generate RSA KeyPair
+ * 2) Initialize encryptor using KeyPair
+ * 3) Encrypt plaintext
+ * 4) Decrypt ciphertext
+ * 5) Verify integrity
+ * ------------------------------------------------------------------
+ * IMPORTANT NOTES
+ * ------------------------------------------------------------------
+ * ✔ Works for small payloads only
+ * ❌ Not OAEP (less secure than V7)
+ * ❌ Not suitable for large data
+ * ------------------------------------------------------------------
+ * RECOMMENDED USAGE
+ * ------------------------------------------------------------------
+ * ✔ Internal systems
+ * ✔ Legacy integrations
+ * Prefer:
+ * ✔ V7 (OAEP)
+ * ✔ Hybrid Encryption (AES + RSA)
  */
-public class RSA_RAW_Encryption_PublicKey_Demo_V10 {
+public class RSA_RAW_Encryption_KeyPair_Demo_V8 {
 
-    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_PublicKey_Demo_V10.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_KeyPair_Demo_V8.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== RSA PUBLIC KEY DEMO V10 STARTED ==========");
-
+        logger.info("========== RSA RAW KEYPAIR DEMO V8 STARTED ==========");
         try {
             //----------------------------------------------------------
-            // STEP 1: GENERATE RSA KEY PAIR (SIMULATION)
+            // STEP 1: GENERATE RSA KEY PAIR
             //----------------------------------------------------------
-            // In real-world:
-            // • Sender only has PublicKey
-            // • Receiver holds PrivateKey
-            // Here we generate both just for demonstration
-
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
 
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            PublicKey publicKey = keyPair.getPublic();
-            logger.info("Public Key generated.");
+            logger.info("RSA KeyPair generated.");
             //----------------------------------------------------------
-            // STEP 2: INITIALIZE ENCRYPTOR WITH PUBLIC KEY ONLY
+            // STEP 2: INITIALIZE ENCRYPTOR USING KEYPAIR
             //----------------------------------------------------------
-            RsaRawEncryptor encryptor = new RsaRawEncryptor(publicKey);
-            logger.info("Encryptor initialized with PublicKey ONLY.");
+            // Internally extracts public/private keys
+            RsaRawEncryptor encryptor = new RsaRawEncryptor(keyPair);
+            logger.info("Encryptor initialized using KeyPair.");
             //----------------------------------------------------------
             // STEP 3: PREPARE DATA
             //----------------------------------------------------------
-            String data = "Public Key Encryption Demo V10";
+            String data = "RSA KeyPair Constructor Demo V8";
             Objects.requireNonNull(data);
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext: " + data);
@@ -84,15 +88,11 @@ public class RSA_RAW_Encryption_PublicKey_Demo_V10 {
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
             logger.info("Encrypted (Base64): " + base64Cipher);
             //----------------------------------------------------------
-            // STEP 5: DECRYPT (SIMULATED RECEIVER SIDE)
+            // STEP 5: DECRYPT
             //----------------------------------------------------------
-            // IMPORTANT: RsaRawEncryptor (this instance) CANNOT decrypt
-            // So we simulate receiver using full key pair
-
-            RsaRawEncryptor rsaRawEncryptor = new RsaRawEncryptor(keyPair); // has private key
-            byte[] decrypted = rsaRawEncryptor.decrypt(encrypted);
+            byte[] decrypted = encryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
-            logger.info("Decrypted (Receiver Side): " + decryptedText);
+            logger.info("Decrypted: " + decryptedText);
             //----------------------------------------------------------
             // STEP 6: VERIFY
             //----------------------------------------------------------
@@ -101,24 +101,17 @@ public class RSA_RAW_Encryption_PublicKey_Demo_V10 {
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            //----------------------------------------------------------
-            // IMPORTANT WARNING DEMO
-            //----------------------------------------------------------
-            // Uncommenting below will FAIL:
-            // encryptor.decrypt(encrypted);
-            // Reason: ❌ No PrivateKey → Cannot decrypt
-            logger.info("========== RSA PUBLIC KEY DEMO V10 COMPLETED ==========");
+            logger.info("========== RSA RAW KEYPAIR DEMO V8 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
-            // Possible failures:
-            //
-            // • InvalidKeyException
-            // • IllegalBlockSizeException (data too large)
-            // • BadPaddingException
+            // Possible issues:
+            // • Key generation failure
+            // • Data size too large for RSA
+            // • Decryption issues (if key corrupted)
             //----------------------------------------------------------
-            logger.log(Level.SEVERE, "Error in PublicKey Demo V10", ex);
+            logger.log(Level.SEVERE, "Error in RSA KeyPair Demo V8", ex);
         }
     }
 }

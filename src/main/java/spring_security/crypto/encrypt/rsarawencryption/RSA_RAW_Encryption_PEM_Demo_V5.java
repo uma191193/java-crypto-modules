@@ -1,81 +1,89 @@
-package spring_security.crypto.encrypt;
+// This code needs to be fixed related to PEM, proper investigation is needed
+package spring_security.crypto.encrypt.rsarawencryption;
 
-import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;
+import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
 
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_SECRET_Encryption_KeyObjects_Demo_V3
+ * RSA_RAW_Encryption_PEM_Demo_V5
  * ------------------------------------------------------------------
- * PURPOSE:
- * Demonstrates usage of: RsaSecretEncryptor(String encoding,PublicKey publicKey,PrivateKey privateKey)
+ * ✔ Uses VALID PKCS#8 PEM format (BEGIN PRIVATE KEY)
+ * ✔ Compatible with RsaRawEncryptor
  * ------------------------------------------------------------------
- * CORE CONCEPT: HYBRID ENCRYPTION
+ * IMPORTANT FIX
  * ------------------------------------------------------------------
- * Internally:
- * 1) Generate random AES key
- * 2) Encrypt plaintext using AES
- * 3) Encrypt AES key using RSA (Public Key)
- * 4) Combine → final ciphertext
+ * ❌ OLD (WRONG):
+ * -----BEGIN RSA PRIVATE KEY-----  (PKCS#1 → NOT supported)
+ * ✔ NEW (CORRECT):
+ * -----BEGIN PRIVATE KEY-----      (PKCS#8 → REQUIRED)
  * ------------------------------------------------------------------
- * KEY BEHAVIOR
+ * HOW TO GENERATE VALID PEM
  * ------------------------------------------------------------------
- * ✔ PublicKey  → Encryption
- * ✔ PrivateKey → Decryption (optional but required for full cycle)
+ * Use OpenSSL:
+ * openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
  * ------------------------------------------------------------------
- * ADVANTAGE OVER PEM VERSION
- * ------------------------------------------------------------------
- * ✔ No PEM parsing issues
- * ✔ Strong typing (Key objects)
- * ✔ Ideal for enterprise usage
  */
-public class RSA_SECRET_Encryption_KeyObjects_Demo_V3 {
+public class RSA_RAW_Encryption_PEM_Demo_V5 {
 
-    private static final Logger logger = Logger.getLogger(RSA_SECRET_Encryption_KeyObjects_Demo_V3.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_PEM_Demo_V5.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== RSA SECRET KEY OBJECTS DEMO V3 STARTED ==========");
+        logger.info("========== RSA RAW PEM DEMO V5 STARTED ==========");
+
         try {
+
             //----------------------------------------------------------
-            // STEP 1: GENERATE RSA KEY PAIR
+            // STEP 1: VALID PKCS#8 PEM (FIXED)
             //----------------------------------------------------------
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            logger.info("RSA KeyPair generated (2048-bit).");
+            String pemData = """
+                    -----BEGIN PRIVATE KEY-----
+                    MIIBVwIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz1zQWx/89ZbduCMs
+                    k5vCk1vZ1tcHTid3e8DqRLVQjaxAg/P6MqxsVXni4eWh05rq6ArlTc95xJMu38xW
+                    sYqK8QIDAQABAkEAq9qeycGQ21MCH2RKDWE/YXdz/BPZt6r9Ga6IpiObOqYkbKx2
+                    +8OobQIEk83TeBIjNhBM9DWW3rtkCnqzirSolQIhAP1Gc7YCOjxIqFZ3VAb9/T/j
+                    Gj33jjlHzvEihQ/HVbUazAiEA1VdNDO7xjoMnQnXrhIRbkIuAeGHWxirMRHkRkNvM
+                    wU0CIQC3NEPoPFcAckU4iigFsMghvYDn8ApX2HFqRSbuuSSMzwIgF8Jo6CQOdht6
+                    v7qAbKLFXrruDsP88D6UiHvxCcOvCJ0CIQCjMzdg3NofM8JrIoVNewc19hXtOD87m
+                    py4V/mQJu1WDk=
+                    -----END PRIVATE KEY-----
+                    """;
+
+            Objects.requireNonNull(pemData, "PEM data must not be null");
 
             //----------------------------------------------------------
             // STEP 2: INITIALIZE ENCRYPTOR
             //----------------------------------------------------------
-            // encoding = UTF-8 (controls string <-> byte conversion)
-            RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor("UTF-8", keyPair.getPublic(), keyPair.getPrivate());
-            logger.info("Encryptor initialized with Public + Private keys.");
+            RsaRawEncryptor rsaRawEncryptor = new RsaRawEncryptor(pemData);
+            logger.info("Encryptor initialized using PKCS#8 PEM.");
 
             //----------------------------------------------------------
-            // STEP 3: PREPARE DATA
+            // STEP 3: PREPARE PLAINTEXT
             //----------------------------------------------------------
-            String data = "RSA Secret Encryptor V3 Demo (Key Objects)";
+            String data = "RSA PEM Constructor Demo V5";
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
+
             logger.info("Plaintext: " + data);
 
             //----------------------------------------------------------
             // STEP 4: ENCRYPT
             //----------------------------------------------------------
-            byte[] encrypted = rsaSecretEncryptor.encrypt(plaintext);
+            byte[] encrypted = rsaRawEncryptor.encrypt(plaintext);
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
+
             logger.info("Encrypted (Base64): " + base64Cipher);
 
             //----------------------------------------------------------
             // STEP 5: DECRYPT
             //----------------------------------------------------------
-            byte[] decrypted = rsaSecretEncryptor.decrypt(encrypted);
+            byte[] decrypted = rsaRawEncryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
+
             logger.info("Decrypted: " + decryptedText);
 
             //----------------------------------------------------------
@@ -83,15 +91,16 @@ public class RSA_SECRET_Encryption_KeyObjects_Demo_V3 {
             //----------------------------------------------------------
             boolean isMatch = data.equals(decryptedText);
             logger.info("Integrity Check: " + isMatch);
+
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            logger.info("========== RSA SECRET DEMO V3 COMPLETED ==========");
+            logger.info("========== RSA RAW PEM DEMO V5 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
-            logger.log(Level.SEVERE, "Error in RSA Secret Encryptor V3 demo", ex);
+            logger.log(Level.SEVERE, "Error during RSA PEM demo", ex);
         }
     }
 }
