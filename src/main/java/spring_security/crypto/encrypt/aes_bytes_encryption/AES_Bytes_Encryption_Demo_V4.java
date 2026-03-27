@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt.aesbytesencryption;
+package spring_security.crypto.encrypt.aes_bytes_encryption;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * AES_Bytes_Encryption_Demo_V6
+ * AES_Bytes_Encryption_Demo_V4
  * -------------------------------------------------------------------------
  * This demo illustrates AES encryption using the most advanced constructor
  * of Spring Security's AesBytesEncryptor:
@@ -54,25 +54,22 @@ import java.util.logging.Logger;
  * Initialization Vector (IV)
  * │
  * ▼
- * AES-CBC Encryption
+ * AES-GCM Encryption
  * │
  * ▼
- * Ciphertext
+ * Ciphertext + Authentication Tag
  * <p>
  * -------------------------------------------------------------------------
- * AES-CBC SECURITY PROPERTIES
+ * AES-GCM SECURITY PROPERTIES
  * -------------------------------------------------------------------------
  * <p>
- * AES-CBC provides:
+ * AES-GCM provides:
  * <p>
  * • Confidentiality (data encryption)
+ * • Integrity (tamper detection)
+ * • Authentication (ensures ciphertext not modified)
  * <p>
- * However it does NOT provide built-in integrity verification.
- * <p>
- * Therefore CBC mode does not automatically detect if ciphertext
- * has been tampered with.
- * <p>
- * For modern systems AES-GCM is generally preferred.
+ * If ciphertext is altered, decryption fails automatically.
  * <p>
  * -------------------------------------------------------------------------
  * SECURITY NOTES
@@ -84,13 +81,13 @@ import java.util.logging.Logger;
  * Never expose encryption keys in source code in real systems.
  */
 
-public class AES_Bytes_Encryption_Demo_V6 {
+public class AES_Bytes_Encryption_Demo_V4 {
 
-    private static final Logger logger = Logger.getLogger(AES_Bytes_Encryption_Demo_V6.class.getName());
+    private static final Logger logger = Logger.getLogger(AES_Bytes_Encryption_Demo_V4.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("=========== AES SECRETKEY CBC ENCRYPTION DEMO V6 STARTED ===========");
+        logger.info("=========== AES SECRETKEY ENCRYPTION DEMO V4 STARTED ===========");
         try {
             //------------------------------------------------------------------
             // STEP 1: GENERATE AES SECRET KEY
@@ -121,14 +118,14 @@ public class AES_Bytes_Encryption_Demo_V6 {
             // STEP 3: INITIALIZE AES ENCRYPTOR
             //------------------------------------------------------------------
             // Constructor used in this demo: AesBytesEncryptor(secretKey, ivGenerator, algorithm)
-            // Algorithm selected: AES-CBC
+            // Algorithm selected: AES-GCM
             // Internal operations performed by Spring Security:
             // 1) AES cipher initialization
             // 2) IV generation
-            // 3) AES-CBC encryption
+            // 3) AES-GCM encryption
 
-            AesBytesEncryptor encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.CBC);
-            logger.info("AES encryptor initialized using SecretKey + CBC.");
+            AesBytesEncryptor encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.GCM);
+            logger.info("AES encryptor initialized using SecretKey + GCM.");
 
             //------------------------------------------------------------------
             // STEP 4: PREPARE PLAINTEXT DATA
@@ -144,13 +141,14 @@ public class AES_Bytes_Encryption_Demo_V6 {
             // STEP 5: PERFORM ENCRYPTION
             //------------------------------------------------------------------
             // encrypt(byte[])
+            //
             // plaintext
             //      │
             //      ▼
-            // AES-CBC encryption
+            // AES-GCM encryption
             //      │
             //      ▼
-            // ciphertext
+            // ciphertext + authentication tag
 
             byte[] encrypted = encryptor.encrypt(plaintext);
             logger.info("Encryption completed successfully.");
@@ -167,6 +165,7 @@ public class AES_Bytes_Encryption_Demo_V6 {
             // STEP 7: PERFORM DECRYPTION
             //------------------------------------------------------------------
             // decrypt(byte[])
+            // AES-GCM verifies the authentication tag automatically.
 
             byte[] decrypted = encryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
@@ -183,7 +182,7 @@ public class AES_Bytes_Encryption_Demo_V6 {
             } else {
                 logger.warning("Integrity verification: FAILED");
             }
-            logger.info("=========== AES SECRETKEY CBC ENCRYPTION DEMO V6 COMPLETED ===========");
+            logger.info("=========== AES SECRETKEY ENCRYPTION DEMO V4 COMPLETED ===========");
         }
 
         //------------------------------------------------------------------
@@ -195,7 +194,7 @@ public class AES_Bytes_Encryption_Demo_V6 {
         } catch (IllegalStateException ex) {
             logger.log(Level.SEVERE, "Encryption/Decryption operation failed. "
                     + "Possible causes include corrupted ciphertext "
-                    + "or invalid encryption parameters.", ex);
+                    + "or authentication tag mismatch.", ex);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unexpected system error occurred.", ex);
         }

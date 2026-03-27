@@ -1,5 +1,5 @@
 // This code needs to be fixed related to PEM, proper investigation is needed
-package spring_security.crypto.encrypt.rsarawencryption;
+package spring_security.crypto.encrypt.rsa_raw_encryption;
 
 import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
 

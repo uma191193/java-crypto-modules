@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt.rsasecretencryption;
+package spring_security.crypto.encrypt.rsa_secret_encryption;
 
 import org.springframework.security.crypto.encrypt.RsaAlgorithm;
 import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;
@@ -11,51 +11,54 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_SECRET_Encryption_Advanced_Demo_V5
+ * RSA_SECRET_Encryption_Algorithm_Demo_V4
  * ------------------------------------------------------------------
  * PURPOSE:
- * Demonstrates usage of: RsaSecretEncryptor(String encoding,PublicKey publicKey,PrivateKey privateKey,
- * RsaAlgorithm algorithm,String salt,boolean gcm)
+ * Demonstrates usage of: RsaSecretEncryptor(String encoding,PublicKey publicKey,PrivateKey privateKey,RsaAlgorithm algorithm)
  * ------------------------------------------------------------------
- * WHAT IS NEW IN V5?
+ * WHAT IS NEW IN V4?
  * ------------------------------------------------------------------
- * ✔ Salt support (adds randomness / strengthens AES key handling)
- * ✔ GCM mode support (authenticated encryption)
+ * ✔ Explicit control over RSA padding/algorithm
+ * ✔ Ability to choose secure vs legacy modes
+ * ------------------------------------------------------------------
+ * SUPPORTED RSA ALGORITHMS (Spring Security)
+ * ------------------------------------------------------------------
+ * 1) RsaAlgorithm.DEFAULT
+ * → Typically maps to RSA/ECB/PKCS1Padding
+ * → Widely supported but considered legacy
+ * 2) RsaAlgorithm.OAEP
+ * → RSA/ECB/OAEPWithSHA-1AndMGF1Padding
+ * → More secure than PKCS#1 v1.5
+ * 3) RsaAlgorithm.OAEP_256
+ * → RSA/ECB/OAEPWithSHA-256AndMGF1Padding
+ * → Strongest and recommended
  * ------------------------------------------------------------------
  * CORE ARCHITECTURE (HYBRID ENCRYPTION)
  * ------------------------------------------------------------------
- * 1) AES key handling (with salt influence)
- * 2) AES encryption (CBC or GCM based on flag)
- * 3) RSA encrypts AES key (using selected algorithm)
+ * 1) Generate random AES key
+ * 2) Encrypt plaintext using AES (fast, scalable)
+ * 3) Encrypt AES key using RSA (selected algorithm)
  * 4) Combine → final ciphertext
  * ------------------------------------------------------------------
- * GCM vs CBC
+ * WHY ALGORITHM MATTERS
  * ------------------------------------------------------------------
- * ✔ GCM (gcm = true)
- * → Provides confidentiality + integrity (AEAD)
- * → Protects against tampering
- * ✔ CBC (gcm = false)
- * → Only confidentiality
- * → Requires separate integrity mechanism
+ * RSA padding affects:
+ * ✔ Security strength
+ * ✔ Resistance to attacks (e.g., padding oracle)
+ * ✔ Compatibility across systems
  * ------------------------------------------------------------------
- * SALT ROLE
+ * RECOMMENDATION
  * ------------------------------------------------------------------
- * • Adds additional randomness
- * • Helps prevent pattern reuse
- * • Should be consistent for decrypting same data
- * ------------------------------------------------------------------
- * RECOMMENDED SETTINGS
- * ------------------------------------------------------------------
- * ✔ algorithm = OAEP_256
- * ✔ gcm = true
- * ✔ strong random salt
+ * ✔ Use OAEP_256 for modern secure applications
+ * ❌ Avoid DEFAULT in new systems
  */
-public class RSA_SECRET_Encryption_Advanced_Demo_V5 {
+public class RSA_SECRET_Encryption_Algorithm_Demo_V4 {
 
-    private static final Logger logger = Logger.getLogger(RSA_SECRET_Encryption_Advanced_Demo_V5.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_SECRET_Encryption_Algorithm_Demo_V4.class.getName());
 
     public static void main(String[] args) {
-        logger.info("========== RSA SECRET ADVANCED DEMO V5 STARTED ==========");
+
+        logger.info("========== RSA SECRET ALGORITHM DEMO V4 STARTED ==========");
         try {
             //----------------------------------------------------------
             // STEP 1: GENERATE RSA KEY PAIR
@@ -66,42 +69,39 @@ public class RSA_SECRET_Encryption_Advanced_Demo_V5 {
             logger.info("RSA KeyPair generated (2048-bit).");
 
             //----------------------------------------------------------
-            // STEP 2: CONFIGURE ADVANCED PARAMETERS
+            // STEP 2: SELECT RSA ALGORITHM (CRITICAL STEP)
             //----------------------------------------------------------
+            // Choose one:
+            // RsaAlgorithm.DEFAULT  → PKCS#1 v1.5 (legacy)
+            // RsaAlgorithm.OAEP     → SHA-1 based OAEP
+            // RsaAlgorithm.OAEP_256 → SHA-256 based OAEP (recommended)
+
             RsaAlgorithm algorithm = RsaAlgorithm.OAEP;
-
-            // Salt should ideally come from secure random source
-            String salt = "a1b2c3d4e5f6g7h8";
-
-            // Enable GCM (recommended)
-            boolean useGCM = true;
-
-            logger.info("Algorithm: " + algorithm);
-            logger.info("GCM Enabled: " + useGCM);
-            logger.info("Salt: " + salt);
+            logger.info("Selected RSA Algorithm: " + algorithm);
 
             //----------------------------------------------------------
             // STEP 3: INITIALIZE ENCRYPTOR
             //----------------------------------------------------------
+            // encoding = UTF-8 ensures consistent byte conversion
+            // publicKey  → used for encrypting AES key
+            // privateKey → used for decrypting AES key
+            // algorithm  → defines RSA padding scheme
+
             RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor("UTF-8", keyPair.getPublic(),
-                    keyPair.getPrivate(), algorithm, salt, useGCM);
-
-            logger.info("Encryptor initialized with advanced configuration.");
-
+                    keyPair.getPrivate(), algorithm);
+            logger.info("Encryptor initialized with algorithm: " + algorithm);
             //----------------------------------------------------------
-            // STEP 4: PREPARE DATA
+            // STEP 4: PREPARE PLAINTEXT
             //----------------------------------------------------------
-            String data = "RSA Secret Encryptor V5 (Advanced Mode)";
+            String data = "RSA Secret Encryptor V4 (Algorithm Control)";
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext: " + data);
-
             //----------------------------------------------------------
             // STEP 5: ENCRYPT
             //----------------------------------------------------------
-            // Internals:
-            // • AES encryption (GCM mode)
-            // • RSA encrypts AES key (OAEP-256)
-            // • Authentication tag added (GCM)
+            // Internally:
+            // • AES encrypts data
+            // • RSA (selected algorithm) encrypts AES key
 
             byte[] encrypted = rsaSecretEncryptor.encrypt(plaintext);
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
@@ -110,11 +110,9 @@ public class RSA_SECRET_Encryption_Advanced_Demo_V5 {
             //----------------------------------------------------------
             // STEP 6: DECRYPT
             //----------------------------------------------------------
-            // Internals:
-            // • RSA decrypts AES key
-            // • AES-GCM verifies integrity (auth tag)
-            // • Decrypts data
-
+            // Reverse flow:
+            // • RSA decrypts AES key (using same algorithm)
+            // • AES decrypts data
             byte[] decrypted = rsaSecretEncryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
             logger.info("Decrypted: " + decryptedText);
@@ -127,19 +125,19 @@ public class RSA_SECRET_Encryption_Advanced_Demo_V5 {
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            logger.info("========== RSA SECRET DEMO V5 COMPLETED ==========");
+            logger.info("========== RSA SECRET DEMO V4 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
             // Possible failures:
             //
-            // • GCM authentication failure (tampered data)
-            // • Algorithm mismatch
-            // • Incorrect salt usage
+            // • Unsupported algorithm in JVM
+            // • Mismatched encryption/decryption algorithm
             // • Invalid key pair
+            // • Cipher initialization issues
             //
-            logger.log(Level.SEVERE, "Error in RSA Secret Encryptor V5 demo", ex);
+            logger.log(Level.SEVERE, "Error in RSA Secret Encryptor V4 demo", ex);
         }
     }
 }

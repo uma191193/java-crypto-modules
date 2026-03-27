@@ -1,12 +1,10 @@
-package spring_security.crypto.encrypt.rsarawencryption;
+package spring_security.crypto.encrypt.rsa_raw_encryption;
 
-import org.springframework.security.crypto.encrypt.RsaAlgorithm;
 import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
 import java.util.Objects;
@@ -14,99 +12,87 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_RAW_Encryption_Algorithm_Demo_V7
+ * RSA_RAW_Encryption_PublicKey_Demo_V10
  * ------------------------------------------------------------------
  * PURPOSE:
- * Demonstrates usage of: RsaRawEncryptor(String encoding, PublicKey publicKey,PrivateKey privateKey, RsaAlgorithm algorithm)
+ * Demonstrates usage of: RsaRawEncryptor(PublicKey publicKey)
  * ------------------------------------------------------------------
- * WHAT'S NEW IN V7?
+ * CORE IDEA
  * ------------------------------------------------------------------
- * ✔ Explicit algorithm selection
- * ✔ Enables OAEP (modern, secure padding)
+ * This constructor enables:
+ * ✔ Encryption using ONLY public key
+ * ❌ Decryption is NOT possible (no private key)
  * ------------------------------------------------------------------
- * SUPPORTED ALGORITHMS
+ * REAL-WORLD USAGE
  * ------------------------------------------------------------------
- * • RsaAlgorithm.DEFAULT  → PKCS#1 v1.5 (legacy)
- * • RsaAlgorithm.OAEP     → OAEP (recommended)
+ * ✔ Client encrypts data using server's public key
+ * ✔ Only server (with private key) can decrypt
+ * Examples:
+ * • HTTPS handshake (conceptually)
+ * • Secure API payloads
+ * • Public key encryption systems
  * ------------------------------------------------------------------
- * WHY OAEP?
+ * INTERNAL BEHAVIOR
  * ------------------------------------------------------------------
- * ✔ Semantic security (randomized encryption)
- * ✔ Resistant to padding oracle attacks
- * ✔ Used in modern systems (TLS, JWT, etc.)
+ * Uses default RSA transformation:
+ * → RSA/ECB/PKCS1Padding (legacy)
  * ------------------------------------------------------------------
- * FLOW
+ * IMPORTANT LIMITATION
  * ------------------------------------------------------------------
- * 1) Generate RSA key pair
- * 2) Initialize encryptor with OAEP
- * 3) Encrypt plaintext
- * 4) Decrypt ciphertext
- * 5) Verify integrity
- * ------------------------------------------------------------------
- * IMPORTANT NOTES
- * ------------------------------------------------------------------
- * ✔ Still RSA → small payload only (~190 bytes)
- * ✔ Not for large data → use Hybrid Encryption
- * ------------------------------------------------------------------
- * SECURITY UPGRADE OVER V6
- * ------------------------------------------------------------------
- * V6 → PKCS#1 v1.5 (less secure)
- * V7 → OAEP (recommended)
+ * Calling decrypt() will throw exception:
+ * → because PrivateKey is not available
  */
-public class RSA_RAW_Encryption_Algorithm_Demo_V7 {
+public class RSA_RAW_Encryption_PublicKey_Demo_V10 {
 
-    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_Algorithm_Demo_V7.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_PublicKey_Demo_V10.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== RSA RAW ALGORITHM DEMO V7 STARTED ==========");
-        try {
+        logger.info("========== RSA PUBLIC KEY DEMO V10 STARTED ==========");
 
+        try {
             //----------------------------------------------------------
-            // STEP 1: GENERATE RSA KEY PAIR
+            // STEP 1: GENERATE RSA KEY PAIR (SIMULATION)
             //----------------------------------------------------------
+            // In real-world:
+            // • Sender only has PublicKey
+            // • Receiver holds PrivateKey
+            // Here we generate both just for demonstration
+
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
 
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
             PublicKey publicKey = keyPair.getPublic();
-            PrivateKey privateKey = keyPair.getPrivate();
-
-            logger.info("RSA KeyPair generated.");
-
+            logger.info("Public Key generated.");
             //----------------------------------------------------------
-            // STEP 2: INITIALIZE ENCRYPTOR WITH ALGORITHM
+            // STEP 2: INITIALIZE ENCRYPTOR WITH PUBLIC KEY ONLY
             //----------------------------------------------------------
-            // Choose algorithm:
-            // ✔ RsaAlgorithm.OAEP (recommended)
-            // ❌ RsaAlgorithm.DEFAULT (legacy)
-
-            //In the below constructor the Parameter RsaAlgorithm.OAEP is important
-            RsaRawEncryptor encryptor = new RsaRawEncryptor("UTF-8", publicKey, privateKey, RsaAlgorithm.OAEP);
-            logger.info("Encryptor initialized with OAEP algorithm.");
-
+            RsaRawEncryptor encryptor = new RsaRawEncryptor(publicKey);
+            logger.info("Encryptor initialized with PublicKey ONLY.");
             //----------------------------------------------------------
             // STEP 3: PREPARE DATA
             //----------------------------------------------------------
-            String data = "RSA OAEP Encryption Demo V7";
+            String data = "Public Key Encryption Demo V10";
             Objects.requireNonNull(data);
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext: " + data);
-
             //----------------------------------------------------------
             // STEP 4: ENCRYPT
             //----------------------------------------------------------
             byte[] encrypted = encryptor.encrypt(plaintext);
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
             logger.info("Encrypted (Base64): " + base64Cipher);
+            //----------------------------------------------------------
+            // STEP 5: DECRYPT (SIMULATED RECEIVER SIDE)
+            //----------------------------------------------------------
+            // IMPORTANT: RsaRawEncryptor (this instance) CANNOT decrypt
+            // So we simulate receiver using full key pair
 
-            //----------------------------------------------------------
-            // STEP 5: DECRYPT
-            //----------------------------------------------------------
-            byte[] decrypted = encryptor.decrypt(encrypted);
+            RsaRawEncryptor rsaRawEncryptor = new RsaRawEncryptor(keyPair); // has private key
+            byte[] decrypted = rsaRawEncryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
-            logger.info("Decrypted: " + decryptedText);
-
+            logger.info("Decrypted (Receiver Side): " + decryptedText);
             //----------------------------------------------------------
             // STEP 6: VERIFY
             //----------------------------------------------------------
@@ -115,17 +101,24 @@ public class RSA_RAW_Encryption_Algorithm_Demo_V7 {
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            logger.info("========== RSA RAW ALGORITHM DEMO V7 COMPLETED ==========");
+            //----------------------------------------------------------
+            // IMPORTANT WARNING DEMO
+            //----------------------------------------------------------
+            // Uncommenting below will FAIL:
+            // encryptor.decrypt(encrypted);
+            // Reason: ❌ No PrivateKey → Cannot decrypt
+            logger.info("========== RSA PUBLIC KEY DEMO V10 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
             // Possible failures:
-            // • Algorithm mismatch
-            // • Invalid key usage
-            // • Data too large for RSA
+            //
+            // • InvalidKeyException
+            // • IllegalBlockSizeException (data too large)
+            // • BadPaddingException
             //----------------------------------------------------------
-            logger.log(Level.SEVERE, "Error in RSA Algorithm Demo V7", ex);
+            logger.log(Level.SEVERE, "Error in PublicKey Demo V10", ex);
         }
     }
 }

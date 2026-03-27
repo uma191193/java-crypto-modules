@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt.aesbytesencryption;
+package spring_security.crypto.encrypt.aes_bytes_encryption;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.crypto.keygen.KeyGenerators;

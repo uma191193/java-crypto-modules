@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt.rsasecretencryption;
+package spring_security.crypto.encrypt.rsa_secret_encryption;
 
 import org.springframework.security.crypto.encrypt.RsaAlgorithm;
 import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;

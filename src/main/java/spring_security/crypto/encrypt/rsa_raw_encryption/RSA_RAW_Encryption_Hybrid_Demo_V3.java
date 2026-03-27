@@ -1,4 +1,4 @@
-package spring_security.crypto.encrypt.rsarawencryption;
+package spring_security.crypto.encrypt.rsa_raw_encryption;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

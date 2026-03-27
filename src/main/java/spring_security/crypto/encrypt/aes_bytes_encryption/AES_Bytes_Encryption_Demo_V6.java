@@ -1,9 +1,11 @@
-package spring_security.crypto.encrypt.aesbytesencryption;
+package spring_security.crypto.encrypt.aes_bytes_encryption;
 
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
@@ -11,37 +13,42 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * AES_Bytes_Encryption_Demo_V5
+ * AES_Bytes_Encryption_Demo_V6
  * -------------------------------------------------------------------------
- * This program demonstrates AES encryption using the following constructor:
+ * This demo illustrates AES encryption using the most advanced constructor
+ * of Spring Security's AesBytesEncryptor:
  * <p>
  * AesBytesEncryptor(
- * String password,
- * CharSequence salt,
+ * SecretKey secretKey,
  * BytesKeyGenerator ivGenerator,
  * AesBytesEncryptor.CipherAlgorithm algorithm
  * )
  * <p>
- * This version introduces a **configurable cipher algorithm**.
+ * Unlike previous demos (V1–V3), this version does NOT derive the encryption
+ * key from a password.
  * <p>
- * In this demo we use:
+ * Instead, it uses a directly generated cryptographic AES key.
  * <p>
- * AES-CBC (Cipher Block Chaining Mode)
+ * -------------------------------------------------------------------------
+ * WHY USE SecretKey INSTEAD OF PASSWORDS?
+ * -------------------------------------------------------------------------
  * <p>
- * AES-CBC is a traditional symmetric encryption mode that provides
- * confidentiality but does not include built-in integrity verification.
+ * Enterprise cryptographic systems usually do not derive keys from passwords.
+ * <p>
+ * Instead they rely on:
+ * <p>
+ * • Hardware Security Modules (HSM)
+ * • Key Management Services (AWS KMS / Azure Key Vault)
+ * • Secure key stores
+ * • Cryptographic key rotation systems
+ * <p>
+ * These systems provide a **SecretKey** directly.
  * <p>
  * -------------------------------------------------------------------------
  * ENCRYPTION PIPELINE
  * -------------------------------------------------------------------------
  * <p>
- * Password
- * │
- * ▼
- * PBKDF2 Key Derivation
- * │
- * ▼
- * AES Secret Key
+ * AES SecretKey
  * │
  * ▼
  * Initialization Vector (IV)
@@ -53,88 +60,81 @@ import java.util.logging.Logger;
  * Ciphertext
  * <p>
  * -------------------------------------------------------------------------
- * WHAT IS AES-CBC?
+ * AES-CBC SECURITY PROPERTIES
  * -------------------------------------------------------------------------
  * <p>
- * CBC = Cipher Block Chaining
+ * AES-CBC provides:
  * <p>
- * Each plaintext block is XORed with the previous ciphertext block
- * before encryption.
+ * • Confidentiality (data encryption)
  * <p>
- * This ensures identical plaintext blocks produce different ciphertext
- * outputs depending on previous encryption results.
+ * However it does NOT provide built-in integrity verification.
  * <p>
- * However CBC mode does NOT provide built-in authentication.
+ * Therefore CBC mode does not automatically detect if ciphertext
+ * has been tampered with.
  * <p>
- * -------------------------------------------------------------------------
- * SECURITY CHARACTERISTICS OF CBC
- * -------------------------------------------------------------------------
- * <p>
- * • Provides confidentiality (encryption)
- * • Requires a random Initialization Vector (IV)
- * • Does NOT automatically detect tampering
- * <p>
- * For modern applications AES-GCM is generally preferred.
+ * For modern systems AES-GCM is generally preferred.
  * <p>
  * -------------------------------------------------------------------------
- * IMPORTANT NOTE
+ * SECURITY NOTES
  * -------------------------------------------------------------------------
  * <p>
  * AES encryption is reversible.
- * This differs from password hashing algorithms like Argon2.
+ * The same key must be used for encryption and decryption.
+ * <p>
+ * Never expose encryption keys in source code in real systems.
  */
 
-public class AES_Bytes_Encryption_Demo_V5 {
+public class AES_Bytes_Encryption_Demo_V6 {
 
-    private static final Logger logger = Logger.getLogger(AES_Bytes_Encryption_Demo_V5.class.getName());
+    private static final Logger logger = Logger.getLogger(AES_Bytes_Encryption_Demo_V6.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("=========== AES-CBC ENCRYPTION DEMO V5 STARTED ===========");
+        logger.info("=========== AES SECRETKEY CBC ENCRYPTION DEMO V6 STARTED ===========");
         try {
             //------------------------------------------------------------------
-            // STEP 1: DEFINE PASSWORD AND GENERATE SALT
+            // STEP 1: GENERATE AES SECRET KEY
             //------------------------------------------------------------------
-            // Spring Security derives the AES key using: password + salt
-            // via PBKDF2 key derivation.
-            // Salt ensures:
-            // • stronger randomness
-            // • protection against rainbow-table attacks
+            // Java Cryptography Architecture (JCA) provides a KeyGenerator that can produce secure AES keys.
+            // AES supports key sizes:
+            // 128-bit
+            // 192-bit
+            // 256-bit
+            // We use AES-256 for stronger security.
 
-            String password = "SecurePassword2026";
-            Objects.requireNonNull(password, "Encryption password cannot be null.");
-            String salt = KeyGenerators.string().generateKey();
-            logger.info("Password defined successfully.");
-            logger.info("Generated salt: " + salt);
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(256);
+            SecretKey secretKey = keyGenerator.generateKey();
+            Objects.requireNonNull(secretKey, "SecretKey generation failed.");
+            logger.info("AES SecretKey generated successfully.");
 
             //------------------------------------------------------------------
             // STEP 2: INITIALIZATION VECTOR GENERATOR
             //------------------------------------------------------------------
-            // AES block size = 16 bytes
-            // The IV generator produces cryptographically secure random IV values required for encryption.
+            // AES block size = 16 bytes (128 bits)
+            // Therefore IV length should be 16 bytes.
 
             BytesKeyGenerator ivGenerator = KeyGenerators.secureRandom(16);
             logger.info("Secure IV generator initialized.");
 
             //------------------------------------------------------------------
-            // STEP 3: INITIALIZE AES ENCRYPTOR WITH CBC ALGORITHM
+            // STEP 3: INITIALIZE AES ENCRYPTOR
             //------------------------------------------------------------------
-            // Constructor used: AesBytesEncryptor(password, salt, ivGenerator, algorithm)
-            // Algorithm selected: CipherAlgorithm.CBC
-            // Internally Spring Security performs:
-            // 1) PBKDF2 key derivation
-            // 2) AES key generation
-            // 3) IV creation
-            // 4) AES-CBC encryption
+            // Constructor used in this demo: AesBytesEncryptor(secretKey, ivGenerator, algorithm)
+            // Algorithm selected: AES-CBC
+            // Internal operations performed by Spring Security:
+            // 1) AES cipher initialization
+            // 2) IV generation
+            // 3) AES-CBC encryption
 
-            AesBytesEncryptor encryptor = new AesBytesEncryptor(password, salt, ivGenerator, AesBytesEncryptor.CipherAlgorithm.CBC);
-            logger.info("AES encryptor initialized using CBC mode.");
+            AesBytesEncryptor encryptor = new AesBytesEncryptor(secretKey, ivGenerator, AesBytesEncryptor.CipherAlgorithm.CBC);
+            logger.info("AES encryptor initialized using SecretKey + CBC.");
 
             //------------------------------------------------------------------
             // STEP 4: PREPARE PLAINTEXT DATA
             //------------------------------------------------------------------
 
-            String data = "AES Encryption using CBC Mode";
+            String data = "AES Encryption using SecretKey";
             Objects.requireNonNull(data, "Input data cannot be null.");
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext prepared for encryption.");
@@ -145,11 +145,11 @@ public class AES_Bytes_Encryption_Demo_V5 {
             //------------------------------------------------------------------
             // encrypt(byte[])
             // plaintext
-            //     │
-            //     ▼
+            //      │
+            //      ▼
             // AES-CBC encryption
-            //     │
-            //     ▼
+            //      │
+            //      ▼
             // ciphertext
 
             byte[] encrypted = encryptor.encrypt(plaintext);
@@ -183,7 +183,7 @@ public class AES_Bytes_Encryption_Demo_V5 {
             } else {
                 logger.warning("Integrity verification: FAILED");
             }
-            logger.info("=========== AES-CBC ENCRYPTION DEMO V5 COMPLETED ===========");
+            logger.info("=========== AES SECRETKEY CBC ENCRYPTION DEMO V6 COMPLETED ===========");
         }
 
         //------------------------------------------------------------------
@@ -193,9 +193,9 @@ public class AES_Bytes_Encryption_Demo_V5 {
         catch (IllegalArgumentException ex) {
             logger.log(Level.SEVERE, "Invalid input supplied to encryption process.", ex);
         } catch (IllegalStateException ex) {
-            logger.log(Level.SEVERE, "Encryption or decryption operation failed. "
-                    + "Possible causes include incorrect password, "
-                    + "invalid salt or corrupted ciphertext.", ex);
+            logger.log(Level.SEVERE, "Encryption/Decryption operation failed. "
+                    + "Possible causes include corrupted ciphertext "
+                    + "or invalid encryption parameters.", ex);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Unexpected system error occurred.", ex);
         }

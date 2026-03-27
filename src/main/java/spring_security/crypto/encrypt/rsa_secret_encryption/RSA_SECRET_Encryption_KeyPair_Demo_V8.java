@@ -1,98 +1,94 @@
-package spring_security.crypto.encrypt.rsarawencryption;
+package spring_security.crypto.encrypt.rsa_secret_encryption;
 
-import org.springframework.security.crypto.encrypt.RsaRawEncryptor;
+import org.springframework.security.crypto.encrypt.RsaSecretEncryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * RSA_RAW_Encryption_KeyPair_Demo_V8
+ * RSA_SECRET_Encryption_KeyPair_Demo_V8
  * ------------------------------------------------------------------
  * PURPOSE:
- * Demonstrates usage of: RsaRawEncryptor(KeyPair keyPair)
+ * Demonstrates usage of: RsaSecretEncryptor(KeyPair keyPair)
  * ------------------------------------------------------------------
- * WHY THIS CONSTRUCTOR?
+ * WHAT IS NEW IN V8?
  * ------------------------------------------------------------------
- * ✔ Simplifies initialization (single object instead of 2 keys)
- * ✔ Cleaner API for internal key handling
- * ✔ Useful when key pair is already available
+ * ✔ Simplified constructor (no manual key extraction)
+ * ✔ Cleaner API usage using KeyPair directly
  * ------------------------------------------------------------------
  * INTERNAL BEHAVIOR
  * ------------------------------------------------------------------
- * • Extracts:
- * - PublicKey  → for encryption
- * - PrivateKey → for decryption
- * • Uses default algorithm:
- * → RSA/ECB/PKCS1Padding (PKCS#1 v1.5)
+ * Equivalent to:
+ * new RsaSecretEncryptor("UTF-8",keyPair.getPublic(),keyPair.getPrivate())
  * ------------------------------------------------------------------
- * FLOW
+ * ENCRYPTION MODEL
  * ------------------------------------------------------------------
- * 1) Generate RSA KeyPair
- * 2) Initialize encryptor using KeyPair
- * 3) Encrypt plaintext
- * 4) Decrypt ciphertext
- * 5) Verify integrity
+ * ✔ Hybrid Encryption:
+ * 1) AES encrypts data
+ * 2) RSA encrypts AES key
  * ------------------------------------------------------------------
- * IMPORTANT NOTES
+ * KEY USAGE
  * ------------------------------------------------------------------
- * ✔ Works for small payloads only
- * ❌ Not OAEP (less secure than V7)
- * ❌ Not suitable for large data
+ * ✔ PublicKey  → Encrypt AES key
+ * ✔ PrivateKey → Decrypt AES key
  * ------------------------------------------------------------------
- * RECOMMENDED USAGE
+ * ADVANTAGE
  * ------------------------------------------------------------------
- * ✔ Internal systems
- * ✔ Legacy integrations
- * Prefer:
- * ✔ V7 (OAEP)
- * ✔ Hybrid Encryption (AES + RSA)
+ * ✔ Less boilerplate
+ * ✔ Reduced chance of key mismatch
+ * ✔ Ideal for quick demos and clean codebases
  */
-public class RSA_RAW_Encryption_KeyPair_Demo_V8 {
+public class RSA_SECRET_Encryption_KeyPair_Demo_V8 {
 
-    private static final Logger logger = Logger.getLogger(RSA_RAW_Encryption_KeyPair_Demo_V8.class.getName());
+    private static final Logger logger = Logger.getLogger(RSA_SECRET_Encryption_KeyPair_Demo_V8.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== RSA RAW KEYPAIR DEMO V8 STARTED ==========");
+        logger.info("========== RSA SECRET KEYPAIR DEMO V8 STARTED ==========");
         try {
             //----------------------------------------------------------
             // STEP 1: GENERATE RSA KEY PAIR
             //----------------------------------------------------------
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
-
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            logger.info("RSA KeyPair generated.");
+
+            logger.info("RSA KeyPair generated (2048-bit).");
+
             //----------------------------------------------------------
-            // STEP 2: INITIALIZE ENCRYPTOR USING KEYPAIR
+            // STEP 2: INITIALIZE ENCRYPTOR (KEYPAIR BASED)
             //----------------------------------------------------------
-            // Internally extracts public/private keys
-            RsaRawEncryptor encryptor = new RsaRawEncryptor(keyPair);
+            // Internally extracts:
+            // • PublicKey
+            // • PrivateKey
+            RsaSecretEncryptor rsaSecretEncryptor = new RsaSecretEncryptor(keyPair);
             logger.info("Encryptor initialized using KeyPair.");
+
             //----------------------------------------------------------
             // STEP 3: PREPARE DATA
             //----------------------------------------------------------
-            String data = "RSA KeyPair Constructor Demo V8";
-            Objects.requireNonNull(data);
+            String data = "RSA Secret Encryptor V8 (KeyPair Constructor)";
             byte[] plaintext = data.getBytes(StandardCharsets.UTF_8);
             logger.info("Plaintext: " + data);
+
             //----------------------------------------------------------
             // STEP 4: ENCRYPT
             //----------------------------------------------------------
-            byte[] encrypted = encryptor.encrypt(plaintext);
+            byte[] encrypted = rsaSecretEncryptor.encrypt(plaintext);
             String base64Cipher = Base64.getEncoder().encodeToString(encrypted);
             logger.info("Encrypted (Base64): " + base64Cipher);
+
             //----------------------------------------------------------
             // STEP 5: DECRYPT
             //----------------------------------------------------------
-            byte[] decrypted = encryptor.decrypt(encrypted);
+            byte[] decrypted = rsaSecretEncryptor.decrypt(encrypted);
             String decryptedText = new String(decrypted, StandardCharsets.UTF_8);
             logger.info("Decrypted: " + decryptedText);
+
             //----------------------------------------------------------
             // STEP 6: VERIFY
             //----------------------------------------------------------
@@ -101,17 +97,16 @@ public class RSA_RAW_Encryption_KeyPair_Demo_V8 {
             if (!isMatch) {
                 logger.warning("Data mismatch detected!");
             }
-            logger.info("========== RSA RAW KEYPAIR DEMO V8 COMPLETED ==========");
+            logger.info("========== RSA SECRET DEMO V8 COMPLETED ==========");
         } catch (Exception ex) {
             //----------------------------------------------------------
             // ERROR HANDLING
             //----------------------------------------------------------
-            // Possible issues:
-            // • Key generation failure
-            // • Data size too large for RSA
-            // • Decryption issues (if key corrupted)
-            //----------------------------------------------------------
-            logger.log(Level.SEVERE, "Error in RSA KeyPair Demo V8", ex);
+            // Possible failures:
+            // • KeyPair generation issues
+            // • Cipher initialization errors
+            // • Unexpected runtime crypto issues
+            logger.log(Level.SEVERE, "Error in RSA Secret Encryptor V8 demo", ex);
         }
     }
 }
