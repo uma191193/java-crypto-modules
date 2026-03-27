@@ -7,10 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Java_CryptoModules (1)" />
+        <module name="Java_CryptoModules" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Java_CryptoModules" target="24" />
-    </bytecodeTargetLevel>
   </component>
 </project>
