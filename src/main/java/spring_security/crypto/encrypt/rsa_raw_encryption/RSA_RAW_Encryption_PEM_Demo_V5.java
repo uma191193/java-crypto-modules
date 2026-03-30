@@ -42,16 +42,21 @@ public class RSA_RAW_Encryption_PEM_Demo_V5 {
             // STEP 1: VALID PKCS#8 PEM (FIXED)
             //----------------------------------------------------------
             String pemData = """
-                    -----BEGIN PRIVATE KEY-----
-                    MIIBVwIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAz1zQWx/89ZbduCMs
-                    k5vCk1vZ1tcHTid3e8DqRLVQjaxAg/P6MqxsVXni4eWh05rq6ArlTc95xJMu38xW
-                    sYqK8QIDAQABAkEAq9qeycGQ21MCH2RKDWE/YXdz/BPZt6r9Ga6IpiObOqYkbKx2
-                    +8OobQIEk83TeBIjNhBM9DWW3rtkCnqzirSolQIhAP1Gc7YCOjxIqFZ3VAb9/T/j
-                    Gj33jjlHzvEihQ/HVbUazAiEA1VdNDO7xjoMnQnXrhIRbkIuAeGHWxirMRHkRkNvM
-                    wU0CIQC3NEPoPFcAckU4iigFsMghvYDn8ApX2HFqRSbuuSSMzwIgF8Jo6CQOdht6
-                    v7qAbKLFXrruDsP88D6UiHvxCcOvCJ0CIQCjMzdg3NofM8JrIoVNewc19hXtOD87m
-                    py4V/mQJu1WDk=
-                    -----END PRIVATE KEY-----
+                                   -----BEGIN RSA PRIVATE KEY-----
+                                   MIICXAIBAAKBgQD6vqn19W/VB215DBADRakfPmCtFBf8/+YyhGqixWIwDiEl/L6L
+                                   w5HKZCUPVgrC0ADhJfvAbn4fte5MWBCTkqgepKL3BySMA0LMaBF12pbHlPSUbmQG
+                                   BJmTX4NNXuUel6TbPYJAU2Nh5Nan0Mb7Bmb8QpFvS0Hw7qZRW8y2eIttfwIDAQAB
+                                   AoGBAJVf9FxkRKUB8cOE3h006JWGUY2KROghgn9hxy0ErYO3RyQcN1+HuFh75GAI
+                                   gAyiYYO/XwS6TkSR2057wBRJ8ABzcL3+v5g+16Vbh0BjXVE+cv1WGdNGujyzl6ji
+                                   jlyF4cb6tXDyqWTLkMAtV20NfO/CGsfii6YEkZb2P90usthRAkEA/oG7a9EvQ7eR
+                                   gSEqppzW7KCwidPjnZTr/ROIZQU33nwkIJ0ElTjMNYKP8DerSuixR9skw2ZY8Q8I
+                                   1PTBnocHwwJBAPw3SAQYwxZwQMu1trVPMNOGIbSY4rQlMZGXrCZSu/TnozczFLA8
+                                   qNM84g5veyJOzHKmYkIsMG1gwg5VNniG45UCQF6SlLOW0upl70K9sVyiUVcyywcc
+                    Xqty6FJtjLSFQOKC3OXlkwtkRLXpo1UPSq6WUzIxY7LceFZzUMPZg41F/gMCQHNr
+                                   POqbBlPzZMOUUZthNP/nhu8lc8Fqr+dnmGElRVxK0JdHKfWInN2mI/DlNV064Dar
+                                   S5XqsPKs78EtX7MCT40CQFQZiry8m7ROubOU4+HDG9o1w9zcKXCkmbD9hBCGvTAj
+                                   BQNuGE0DtC6FEWTs8bXybLM5yBRq1XiKLdmi5N+3n4g=
+                                   -----END RSA PRIVATE KEY-----
                     """;
 
             Objects.requireNonNull(pemData, "PEM data must not be null");
