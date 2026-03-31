@@ -153,7 +153,6 @@
 
         <!--
         Apache Commons Logging
-
         Logging abstraction used internally by Spring Framework libraries.
         Required by Spring Security Crypto components such as
         Argon2PasswordEncoder and other cryptographic utilities.
@@ -162,6 +161,43 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.3.4</version>
+        </dependency>
+        <!--
+        Provides support for strong adaptive hashing algorithms such as:
+        - Argon2 (recommended)
+        - BCrypt
+        - SCrypt
+        - PBKDF2
+        Key Features:
+        - Fluent API for hashing and verification
+        - Built-in salting and secure configuration defaults
+        - Algorithm tuning (memory, iterations, parallelism)
+        - Resistance against brute-force and rainbow table attacks
+        Used as an alternative or complement to Spring Security Crypto
+        for fine-grained control over password hashing strategies.
+        -->
+        <dependency>
+            <groupId>com.password4j</groupId>
+            <artifactId>password4j</artifactId>
+            <version>1.7.3</version>
+        </dependency>
+        <!--
+        Fundamental module of the Spring Framework providing core utilities.
+        Includes:
+        - Dependency Injection (DI) infrastructure basics
+        - Resource loading utilities
+        - Reflection and type conversion helpers
+        - Core abstractions used across Spring ecosystem
+        In this project, it is primarily used as a supporting dependency
+        for Spring Security Crypto and related components.
+        Note:
+        This does NOT include full Spring Boot or web capabilities—
+        only lightweight core utilities required by Spring libraries.
+        -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>6.1.5</version>
         </dependency>
 
     </dependencies>
