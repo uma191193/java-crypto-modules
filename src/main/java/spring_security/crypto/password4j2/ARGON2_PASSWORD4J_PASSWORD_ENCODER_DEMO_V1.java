@@ -74,7 +74,7 @@ public class ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V1 {
 
     public static void main(String[] args) {
 
-        logger.info("========== ARGON2 PASSWORD4J ENCODER DEMO V2 STARTED ==========");
+        logger.info("========== ARGON2 PASSWORD4J ENCODER DEMO V1 STARTED ==========");
         try {
 
             // ==================================================================================
@@ -121,12 +121,12 @@ public class ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V1 {
             // ==================================================================================
             // COMPLETE
             // ==================================================================================
-            logger.info("========== ARGON2 PASSWORD4J ENCODER DEMO V2 COMPLETED ==========");
+            logger.info("========== ARGON2 PASSWORD4J ENCODER DEMO V1 COMPLETED ==========");
         } catch (Exception ex) {
             // ==================================================================================
             // ERROR HANDLING
             // ==================================================================================
-            logger.log(Level.SEVERE, "Error in Argon2Password4jPasswordEncoder demo V2", ex);
+            logger.log(Level.SEVERE, "Error in Argon2Password4jPasswordEncoder demo V1", ex);
         }
     }
 }
