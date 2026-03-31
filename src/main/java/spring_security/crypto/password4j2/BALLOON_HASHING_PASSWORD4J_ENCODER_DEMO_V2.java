@@ -1,99 +1,95 @@
 package spring_security.crypto.password4j2;
 
-import com.password4j.Argon2Function;
-import com.password4j.types.Argon2;
-import org.springframework.security.crypto.password4j.Argon2Password4jPasswordEncoder;
+import com.password4j.BalloonHashingFunction;
+import org.springframework.security.crypto.password4j.BalloonHashingPassword4jPasswordEncoder;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V2
+ * BALLOON_HASHING_PASSWORD4J_ENCODER_DEMO_V2
  * ==========================================================================================
  * PURPOSE
  * ==========================================================================================
- * Demonstrates usage of:
- * Argon2Password4jPasswordEncoder(Argon2Function argon2Function)
+ * Demonstrates usage of: BalloonHashingPassword4jPasswordEncoder(BalloonHashingFunction balloonHashingFunction,
+ * int saltLength)
  * ==========================================================================================
- * CORE CONCEPT: FULL ARGON2 CUSTOM CONFIGURATION (PASSWORD4J)
+ * CORE CONCEPT: CUSTOM BALLOON HASHING CONFIGURATION
  * ==========================================================================================
- * This approach provides complete control over:
- * ✔ Memory cost
- * ✔ Iterations (time cost)
- * ✔ Parallelism (threads)
- * ✔ Output length (hash size)
- * ✔ Variant (Argon2i / Argon2d / Argon2id)
- * ✔ Version (Argon2 v1.0 vs v1.3)
+ * Unlike V1 (default configuration), this allows explicit control over:
+ * ✔ Memory cost (space complexity)
+ * ✔ Time cost (iterations)
+ * ✔ Parallelism (if supported)
+ * ✔ Salt length
  * ==========================================================================================
- * WHY USE CUSTOM Argon2Function?
+ * WHY CUSTOM CONFIGURATION?
  * ==========================================================================================
- * Default constructor → predefined safe configuration
- * Custom Argon2Function → fine-tuned for:
- * ✔ High-security systems
- * ✔ Hardware-aware tuning
- * ✔ Performance vs security balancing
- * ✔ Compliance requirements (e.g., OWASP, NIST)
+ * ✔ Fine-tune security vs performance
+ * ✔ Adapt to hardware capabilities
+ * ✔ Increase resistance against brute-force / GPU attacks
  * ==========================================================================================
- * ARGON2 PARAMETERS EXPLAINED
+ * BALLOON HASHING PARAMETERS EXPLAINED
  * ==========================================================================================
- * memory (KB)
- * → RAM usage (higher = stronger against GPU attacks)
- * iterations (time cost)
- * → Number of passes (higher = slower, more secure)
+ * space (memory cost)
+ * → Amount of memory used (higher = stronger)
+ * time (iterations)
+ * → Number of passes over memory (higher = slower & more secure)
  * parallelism
- * → Number of threads (depends on CPU cores)
- * outputLength
- * → Length of generated hash (e.g., 32 bytes)
- * type (Argon2 variant)
- * → Argon2.i  → side-channel resistant
- * → Argon2.d  → GPU resistant
- * → Argon2.id → hybrid (RECOMMENDED)
- * version
- * → 0x10 (16) → Argon2 v1.0
- * → 0x13 (19) → Argon2 v1.3 (RECOMMENDED)
+ * → Number of parallel threads (depends on implementation)
+ * saltLength
+ * → Length of randomly generated salt (bytes)
  * ==========================================================================================
  * INTERNAL FLOW
  * ==========================================================================================
  * encode():
- * 1) Generate random salt
- * 2) Apply configured Argon2 function
- * 3) Produce encoded hash string
+ * 1) Generate random salt (based on saltLength)
+ * 2) Apply Balloon hashing function
+ * 3) Produce encoded hash
  * matches():
  * 1) Extract parameters from encoded hash
- * 2) Recompute hash using same parameters
+ * 2) Recompute hash
  * 3) Perform secure comparison
  * ==========================================================================================
- * ENCODE FORMAT (STANDARD ARGON2)
+ * ENCODE FORMAT
  * ==========================================================================================
- * $argon2id$v=19$m=65536,t=3,p=1$<salt>$<hash>
+ * $balloon$<params>$<salt>$<hash>
+ * ==========================================================================================
+ * SECURITY CHARACTERISTICS
+ * ==========================================================================================
+ * ✔ Memory-hard algorithm
+ * ✔ Resistant to GPU/ASIC attacks
+ * ✔ Configurable cost factors
  */
-public class ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V2 {
+public class BALLOON_HASHING_PASSWORD4J_ENCODER_DEMO_V2 {
 
-    private static final Logger logger = Logger.getLogger(ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V2.class.getName());
+    private static final Logger logger = Logger.getLogger(BALLOON_HASHING_PASSWORD4J_ENCODER_DEMO_V2.class.getName());
 
     public static void main(String[] args) {
 
-        logger.info("========== ARGON2 PASSWORD4J ENCODER DEMO V2 STARTED ==========");
-        try {
+        logger.info("========== BALLOON HASHING PASSWORD4J DEMO V2 STARTED ==========");
 
+        try {
             // ==================================================================================
-            // STEP 1: CREATE FULLY CONFIGURED ARGON2 FUNCTION
+            // STEP 1: CREATE CUSTOM BALLOON HASHING FUNCTION
             // ==================================================================================
-            Argon2Function argon2Function = Argon2Function.getInstance(
-                    65536,       // memory (64 MB)
-                    3,           // iterations (time cost)
-                    1,           // parallelism (threads)
-                    32,          // output length (bytes)
-                    Argon2.ID,   // Argon2id (recommended hybrid variant)
-                    19           // version 1.3 (0x13)
+            BalloonHashingFunction balloonFunction = BalloonHashingFunction.getInstance(
+                    "SHA-256", // Underlying hash algorithm
+                    1024,      // space cost (memory usage)
+                    3,         // time cost (iterations)
+                    1          // parallelism (number of threads)
             );
 
-            logger.info("Custom Argon2Function created with full configuration.");
+            logger.info("Custom BalloonHashingFunction created.");
+
             // ==================================================================================
-            // STEP 2: CREATE ENCODER
+            // STEP 2: CREATE ENCODER WITH CUSTOM FUNCTION + SALT LENGTH
             // ==================================================================================
-            Argon2Password4jPasswordEncoder argon2Password4jPasswordEncoder = new Argon2Password4jPasswordEncoder(argon2Function);
-            logger.info("Argon2Password4jPasswordEncoder initialized.");
+            int saltLength = 16; // 16 bytes salt (recommended minimum)
+
+            BalloonHashingPassword4jPasswordEncoder balloonHashingPassword4jPasswordEncoder =
+                    new BalloonHashingPassword4jPasswordEncoder(balloonFunction, saltLength);
+
+            logger.info("Encoder initialized with custom configuration.");
 
             // ==================================================================================
             // STEP 3: DEFINE RAW PASSWORD
@@ -104,34 +100,35 @@ public class ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V2 {
             // ==================================================================================
             // STEP 4: ENCODE PASSWORD
             // ==================================================================================
-            String encodedPassword = argon2Password4jPasswordEncoder.encode(rawPassword);
+            String encodedPassword = balloonHashingPassword4jPasswordEncoder.encode(rawPassword);
             logger.info("Encoded Password: " + encodedPassword);
 
             // ==================================================================================
             // STEP 5: VERIFY PASSWORD (CORRECT)
             // ==================================================================================
-            boolean isMatch = argon2Password4jPasswordEncoder.matches(rawPassword, encodedPassword);
+            boolean isMatch = balloonHashingPassword4jPasswordEncoder.matches(rawPassword, encodedPassword);
             logger.info("Password Match (Correct): " + isMatch);
 
             // ==================================================================================
             // STEP 6: VERIFY PASSWORD (WRONG)
             // ==================================================================================
-            boolean isWrongMatch = argon2Password4jPasswordEncoder.matches("WrongPassword", encodedPassword);
+            boolean isWrongMatch = balloonHashingPassword4jPasswordEncoder.matches("WrongPassword", encodedPassword);
             logger.info("Password Match (Wrong): " + isWrongMatch);
 
             // ==================================================================================
             // STEP 7: MULTIPLE ENCODING INSIGHT
             // ==================================================================================
-            String encodedAgain = argon2Password4jPasswordEncoder.encode(rawPassword);
+            String encodedAgain = balloonHashingPassword4jPasswordEncoder.encode(rawPassword);
             logger.info("Re-encoded Password: " + encodedAgain);
             logger.info("Are both hashes same? " + encodedPassword.equals(encodedAgain));
 
             /**
              * Insight:
              * ✔ Different hashes due to random salt
-             * ✔ Same Argon2 configuration embedded in hash
-             * ✔ Verification works because parameters are stored in encoded string
+             * ✔ Same Balloon hashing configuration reused
+             * ✔ Salt length impacts entropy (security)
              */
+
             // ==================================================================================
             // COMPLETE
             // ==================================================================================
@@ -140,7 +137,7 @@ public class ARGON2_PASSWORD4J_PASSWORD_ENCODER_DEMO_V2 {
             // ==================================================================================
             // ERROR HANDLING
             // ==================================================================================
-            logger.log(Level.SEVERE, "Error in Argon2Password4jPasswordEncoder demo V2", ex);
+            logger.log(Level.SEVERE, "Error in BalloonHashingPassword4jPasswordEncoder demo V2", ex);
         }
     }
 }
